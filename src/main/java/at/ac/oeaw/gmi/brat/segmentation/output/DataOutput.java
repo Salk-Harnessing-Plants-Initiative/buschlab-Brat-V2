@@ -1,31 +1,27 @@
 package at.ac.oeaw.gmi.brat.segmentation.output;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.io.*;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
 import at.ac.oeaw.gmi.brat.segmentation.plants.Plant;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
-
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.Blitter;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.io.*;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.List;
+import java.util.prefs.Preferences;
+
 public class DataOutput {
 	private static final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private static final Preferences prefs_expert = prefs_simple.node("expert");
 	private static final String outputDirectory = new File(prefs_simple.get("baseDirectory",null),"processed").getAbsolutePath();
-	public static void writePlateDiags(ImageProcessor srcIp,List<List<Plant>> plants,int time,String filenamePart){
+	public static void writePlateDiags(ImageProcessor srcIp, List<List<Plant>> plants, int time, String filenamePart){
 		FileUtils.assertFolder(outputDirectory);
 		ImageProcessor diagIp=srcIp.duplicate();
 		for(List<Plant> plantsRow:plants){
@@ -82,7 +78,7 @@ public class DataOutput {
 		}
 	}
 
-	public static void writeTraits(List<List<Plant>> plants,Integer time,String filenamePart){
+	public static void writeTraits(List<List<Plant>> plants, Integer time, String filenamePart){
 		FileUtils.assertFolder(outputDirectory);
 		String outputPath=new File(outputDirectory,String.format("Object_Measurements_%s.txt",filenamePart)).getAbsolutePath();
 		DecimalFormat f = new DecimalFormat("####0.000");
@@ -145,7 +141,7 @@ public class DataOutput {
 		}
 	}
 	
-	public static void writeSinglePlantDiagnostics(ImageProcessor srcIp,List<List<Plant>> plants,Integer time,String filenamePart){
+	public static void writeSinglePlantDiagnostics(ImageProcessor srcIp, List<List<Plant>> plants, Integer time, String filenamePart){
 		FileUtils.assertFolder(outputDirectory);
 
 		for(List<Plant> plantRow:plants){
@@ -162,7 +158,7 @@ public class DataOutput {
 		}
 	}
 	
-	private static ImageProcessor createSinglePlantDiagnostic(ImageProcessor srcIp,Plant plant,int time,int border,int newHeight,int plantsPerRow,int plantRows){
+	private static ImageProcessor createSinglePlantDiagnostic(ImageProcessor srcIp, Plant plant, int time, int border, int newHeight, int plantsPerRow, int plantRows){
 		if(plant.getRootRoi(time)==null)
 			return null;
 		
@@ -273,7 +269,7 @@ public class DataOutput {
 		return dstIp;
 	}
 	
-	public static void writeCoordinates(double plateRotation,double scalefactor,Point2D refPt,Shape plateShape,List<List<Plant>> plants,Integer time,String filenamePart) throws IOException{
+	public static void writeCoordinates(double plateRotation, double scalefactor, Point2D refPt, Shape plateShape, List<List<Plant>> plants, Integer time, String filenamePart) throws IOException{
 		PlateCoordinates pc=new PlateCoordinates();
 		pc.rotation=plateRotation;
 		pc.scalefactor=scalefactor;

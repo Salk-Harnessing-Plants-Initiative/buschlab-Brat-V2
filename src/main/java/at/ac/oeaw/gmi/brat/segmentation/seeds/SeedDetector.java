@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.math.HistogramCorrelation;
@@ -18,7 +19,9 @@ import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
+
 public class SeedDetector {
+	private final static Logger log=Logger.getLogger(SeedDetector.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
@@ -29,7 +32,7 @@ public class SeedDetector {
 	public SeedDetector(ImageProcessor srcIp){
 		this.ip=srcIp;
 		seedLayout=new SeedingLayout();
-//		seedLayout.setAlexandroLayout(); //TODO alexandro seed layout
+		seedLayout.setMarcoLayout(); //TODO alexandro seed layout
 	}
 	
 	public List<List<Roi>> getAssignedRois(){
@@ -92,9 +95,12 @@ public class SeedDetector {
 		tmpIp.setThreshold(1,255,ImageProcessor.NO_LUT_UPDATE);
 		ThresholdToSelection ts=new ThresholdToSelection();
 		Roi combinedRoi=ts.convert(tmpIp);
+//		new ImagePlus("combined roi mask",combinedRoi.getMask()).show();
 		ShapeRoi sRoi=new ShapeRoi(combinedRoi);
 		List<Roi> separatedRois=new ArrayList<Roi>();
 		List<Point2D> roiCenters=new ArrayList<Point2D>();
+//		ContrastEnhancer ce=new ContrastEnhancer();
+//		IJ.log("roi size: "+sRoi.getRois().length);
 		for(Roi roi:sRoi.getRois()){
 			Rectangle rr=roi.getBounds();
 			if(rr.width<seedMinAxis/mmPerPixel || rr.height<seedMinAxis/mmPerPixel ||
@@ -264,6 +270,14 @@ public class SeedDetector {
 		for(List<Point2D> rowPts:seedPos){
 			for(Point2D pt:rowPts){
 				ip.fillOval((int)pt.getX()-5,(int)pt.getY()-5,10,10);
+			}
+		}
+		
+		ip.setColor(Color.green);
+		for(List<Point2D> assignedRowPts:getAssignedRoiCenters()){
+			for(Point2D pt:assignedRowPts){
+				if(pt!=null)
+					ip.fillOval((int)pt.getX()-5,(int)pt.getY()-5,10,10);
 			}
 		}
 		new ImagePlus("seed layout",ip).show();

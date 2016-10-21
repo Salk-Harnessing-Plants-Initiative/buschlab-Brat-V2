@@ -16,7 +16,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.logging.*;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 public class BratFxApp extends Application {
@@ -26,8 +27,8 @@ public class BratFxApp extends Application {
 
     private DoubleProperty fontSize = new SimpleDoubleProperty(10);
 	private IntegerProperty reds = new SimpleIntegerProperty(200);
-	private IntegerProperty greens = new SimpleIntegerProperty(200);
-	private IntegerProperty blues = new SimpleIntegerProperty(255);
+	private IntegerProperty greens = new SimpleIntegerProperty(255);
+	private IntegerProperty blues = new SimpleIntegerProperty(200);
 	private Scene scene;
 
     public static void main(String[] args){

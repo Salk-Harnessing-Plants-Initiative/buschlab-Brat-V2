@@ -1,23 +1,8 @@
 package at.ac.oeaw.gmi.brat.segmentation.plants;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.util.prefs.Preferences;
-
 import at.ac.oeaw.gmi.brat.math.PlaneFit;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.CPoint;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.*;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSpaceConverter;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.EdgeFilter;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.PixelUtils;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonGraph;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
@@ -30,13 +15,13 @@ import ij.gui.WaitForUserDialog;
 import ij.plugin.ContrastEnhancer;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.process.AutoThresholder;
-import ij.process.BinaryProcessor;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.FloodFiller;
-import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
+import ij.process.*;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 public class PlantDetector {
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
@@ -49,7 +34,7 @@ public class PlantDetector {
 	private int origWidth;
 	private int origHeight;
 	
-	public PlantDetector(SeedingLayout seedingLayout,List<List<Plant>> plants){
+	public PlantDetector(SeedingLayout seedingLayout, List<List<Plant>> plants){
 		this.seedingLayout=seedingLayout;
 		this.plants=plants;
 	}
@@ -554,7 +539,7 @@ public class PlantDetector {
 		for(int y=0;y<h;++y){
 			for(int x=0;x<w;++x){
 				if(ip.get(x,y)==fgValue){
-					int nNeigh=PixelUtils.getNeighbourCnt8(ip,x,y);
+					int nNeigh= PixelUtils.getNeighbourCnt8(ip,x,y);
 					if(nNeigh==1){
 						skeletonEndPts.add(new Point(x,y));
 					}
@@ -742,7 +727,7 @@ public class PlantDetector {
 		return diffIp;
 	}
 	
-	private List<TreePoint> getNeighbours4(ImageProcessor ip,TreePoint pos,int highThreshold,int lowThreshold,boolean[][] visited){
+	private List<TreePoint> getNeighbours4(ImageProcessor ip, TreePoint pos, int highThreshold, int lowThreshold, boolean[][] visited){
 		List<TreePoint> neighbours=new ArrayList<TreePoint>();
 		int level=pos.level;
 		if(pos.x>0){
@@ -803,7 +788,7 @@ public class PlantDetector {
 		
 		List<Point> usedPixels=new ArrayList<Point>();
 		for(Point endPt:skelPixels){
-			List<Point> neighbours=PixelUtils.getNeighbours(endPt,skelIp,null);
+			List<Point> neighbours= PixelUtils.getNeighbours(endPt,skelIp,null);
 			Point curPt=null;
 			Point tmpPt=neighbours.get(0);
 			if(edmIp.get(tmpPt.x,tmpPt.y)>endPt.distance(tmpPt)){
@@ -818,7 +803,7 @@ public class PlantDetector {
 				if(curEDM>curDist){
 					assignedCenters.put(endPt,curPt);
 
-					List<Point> nextNeighbours=PixelUtils.getNeighbours(curPt,skelIp,0);
+					List<Point> nextNeighbours= PixelUtils.getNeighbours(curPt,skelIp,0);
 					int maxEDM=0;
 					curPt=null;
 					for(Point p:nextNeighbours){
@@ -860,13 +845,13 @@ public class PlantDetector {
 			rgbModes[i]=rgbStack.getProcessor(i+1).getStatistics().mode;
 		}
 		
-		double[] labRef=ColorSpaceConverter.RGBToCieLab(rgbModes);
+		double[] labRef= ColorSpaceConverter.RGBToCieLab(rgbModes);
 		ImageProcessor distIp=new ByteProcessor(origWidth,origHeight);
 		for(int y=0;y<origHeight;++y){
 			for(int x=0;x<origWidth;++x){
 				double dist2=0;
-				double[] lab=ColorSpaceConverter.RGBToCieLab(new int[]{(int)rgbStack.getVoxel(x,y,0),(int)rgbStack.getVoxel(x,y,1),(int)rgbStack.getVoxel(x,y,2)});
-				int dist=(int)ColorSpaceConverter.distanceCie76(lab, labRef);
+				double[] lab= ColorSpaceConverter.RGBToCieLab(new int[]{(int)rgbStack.getVoxel(x,y,0),(int)rgbStack.getVoxel(x,y,1),(int)rgbStack.getVoxel(x,y,2)});
+				int dist=(int) ColorSpaceConverter.distanceCie76(lab, labRef);
 				if(dist>255)
 					dist=255;
 				

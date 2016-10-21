@@ -5,11 +5,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.math.KMeans1d;
 
 public class SeedingLayout {
+	private final static Logger log=Logger.getLogger(SeedingLayout.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
@@ -90,6 +92,31 @@ public class SeedingLayout {
 		
 	}
 	
+	public void setMarcoLayout(){
+		this.scaleFactor=0.5;
+		this.expectedRows=1;
+		this.expectedColumns=8;
+		
+		seedPositions=new ArrayList<List<Point2D>>();
+		rowYPositions=new ArrayList<Double>();
+		List<Point2D> tmpPositions=new ArrayList<Point2D>();
+		tmpPositions.add(new Point2D.Double(336,1020));
+		tmpPositions.add(new Point2D.Double(930,1020));
+		tmpPositions.add(new Point2D.Double(1632,1020));
+		tmpPositions.add(new Point2D.Double(2328,1020));
+		tmpPositions.add(new Point2D.Double(3156,1020));
+		tmpPositions.add(new Point2D.Double(3840,1020));
+		tmpPositions.add(new Point2D.Double(4452,1020));
+		tmpPositions.add(new Point2D.Double(5094,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+		seedPositions.add(tmpPositions);
+		rowYPositions.add(1020.0);
+		
+	}
+	
 	public int getExpectedRows(){
 		return expectedRows;
 	}
@@ -165,7 +192,7 @@ public class SeedingLayout {
 		}
 		
 		double width2=Double.MAX_VALUE;
-		if(col<seedPositions.size()-1){
+		if(col<seedPositions.get(row).size()-1){
 			width2=seedPositions.get(row).get(col+1).getX()-seedPositions.get(row).get(col).getX();
 //			if(width<searchWidth){
 //				searchWidth=(int)width;

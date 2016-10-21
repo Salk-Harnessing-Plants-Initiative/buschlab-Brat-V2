@@ -1,26 +1,9 @@
 package at.ac.oeaw.gmi.brat.segmentation.plate;
 
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.prefs.Preferences;
-
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.EdgeFilter;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT.HoughLine;
-
 import ij.IJ;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
@@ -29,7 +12,18 @@ import ij.plugin.ContrastEnhancer;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
 public class PlateDetector {
+	private final static Logger log=Logger.getLogger(PlateDetector.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getInt("resolution",1200);
@@ -38,11 +32,11 @@ public class PlateDetector {
 	private ImageProcessor origIp;
 	private int width;  //orig width
 	private int height; //orig height
-
+	
 	private List<HoughLine> houghlines;
 	private Point2D htCenter;
 	private Map<Double,List<Integer>> parallelLines;
-
+	
 	private double rotAngle;
 	private Polygon convexOutline;
 	private Point2D referencePt;
@@ -103,7 +97,7 @@ public class PlateDetector {
 			int[] nCoords=new int[2];
 			int nVal=0;
 			int[] nRgbDiff;
-
+			
 			for(int i=0;i<4;++i){
 				switch(i){
 				case 0:	nCoords[0]=curCoords[0]-1;
@@ -273,6 +267,8 @@ public class PlateDetector {
 
 			parallelLines.get(angle).add(i);
 		}
+		
+		return;
 	}
 	
 	private void searchBestRoiFit(ImageProcessor ip){

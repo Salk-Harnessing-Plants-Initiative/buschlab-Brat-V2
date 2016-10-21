@@ -1,20 +1,15 @@
 package at.ac.oeaw.gmi.brat.segmentation.plants;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonGraph;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
-
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.ImageProcessor;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.List;
 
 public class Plant {
 	String plantID;
@@ -89,14 +84,14 @@ public class Plant {
 		}
 	}
 	
-	public void createTopology(Integer time){
+	public void createTopology(Integer time,SkeletonNode stNodeGuess){
 		if(phenotype.containsKey(time)){
-			phenotype.get(time).topology.determineTopology();
+			phenotype.get(time).topology.determineTopology(stNodeGuess);
 		}
 	}
-	public void createTopologies(){
+	public void createTopologies(SkeletonNode stNodeGuess){
 		for(Integer time:phenotype.keySet()){
-			phenotype.get(time).topology.determineTopology();
+			phenotype.get(time).topology.determineTopology(stNodeGuess);
 		}
 	}
 	
@@ -397,9 +392,9 @@ class Topology{
 	
 	SkeletonGraph graph;
 	
-	protected void determineTopology(){
+	protected void determineTopology(SkeletonNode stNodeGuess){
 		createGraph();
-		detectRootStartPoint();
+		detectRootStartPoint(stNodeGuess);
 		detectRootMainPath();
 		setRootEndPoint();
 	}
@@ -412,64 +407,81 @@ class Topology{
 		graph.create(combinedRoi);
 	}
 	
-	private void detectRootStartPoint(){
+	private void detectRootStartPoint(SkeletonNode stNodeGuess){
 		ShapeRoi sRoiShoot=new ShapeRoi(shootRoi);
 		ShapeRoi sRoiRoot=new ShapeRoi(rootRoi);
 		ShapeRoi combinedRoi=sRoiRoot.and(sRoiShoot);
-		if(combinedRoi.getBounds().width!=0 && combinedRoi.getBounds().height!=0){
-			ImageProcessor combinedMask=combinedRoi.getMask();
-			//		new ImagePlus("combined roi",combinedMask).show();
-			double stX=0;
-			double stY=0;
-			int stCnt=0;
-			for(int y=0;y<combinedMask.getHeight();++y){
-				for(int x=0;x<combinedMask.getWidth();++x){
-					if(combinedMask.get(x,y)>0){
-						stX+=x;
-						stY+=y;
-						stCnt++;
+		if(stNodeGuess==null){
+			System.err.println("start point guess: null");
+			if(combinedRoi.getBounds().width!=0 && combinedRoi.getBounds().height!=0){
+				ImageProcessor combinedMask=combinedRoi.getMask();
+				//		new ImagePlus("combined roi",combinedMask).show();
+				double stX=0;
+				double stY=0;
+				int stCnt=0;
+				for(int y=0;y<combinedMask.getHeight();++y){
+					for(int x=0;x<combinedMask.getWidth();++x){
+						if(combinedMask.get(x,y)>0){
+							stX+=x;
+							stY+=y;
+							stCnt++;
+						}
 					}
 				}
-			}
-			stX/=stCnt;
-			stY/=stCnt;
+				stX/=stCnt;
+				stY/=stCnt;
 
-			stX+=combinedRoi.getBounds().x;
-			stY+=combinedRoi.getBounds().y;
+				stX+=combinedRoi.getBounds().x;
+				stY+=combinedRoi.getBounds().y;
+				double minDist=Double.MAX_VALUE;
+				for(SkeletonNode node:graph.getNodes()){
+					double dist=node.distanceSq(stX,stY);
+					if(dist<minDist){
+						minDist=dist;
+						rootStartNode=node;
+					}
+				}
+			} //if
+			else{
+				Rectangle shootBounds=shootRoi.getBounds();
+				ImageProcessor shootMask=shootRoi.getMask();
+				List<SkeletonNode> shootNodes=new ArrayList<SkeletonNode>();
+				List<SkeletonNode> rootNodes=new ArrayList<SkeletonNode>();
+				for(SkeletonNode node:graph.getNodes()){
+					int x=node.getX()-shootBounds.x;
+					int y=node.getY()-shootBounds.y;
+					if(x>0 && x<shootBounds.width && y>0 && y<shootBounds.height){
+						if(shootMask.get(x,y)>0){
+							shootNodes.add(node);
+							continue;
+						}
+					}
+					rootNodes.add(node);
+				}
+
+				double minDist=Double.MAX_VALUE;
+				for(SkeletonNode rNode:rootNodes){
+					for(SkeletonNode sNode:shootNodes){
+						double dist=rNode.distanceSq(sNode);
+						if(dist<minDist){
+							minDist=dist;
+							rootStartNode=rNode;
+						}
+					}
+				}
+
+			}
+		} // if(stNodeGuess==null)
+		else{
+			double stX=stNodeGuess.getX();
+			double stY=stNodeGuess.getY();
+			System.err.println("start point guess: "+stX+","+stY);
 			double minDist=Double.MAX_VALUE;
 			for(SkeletonNode node:graph.getNodes()){
 				double dist=node.distanceSq(stX,stY);
 				if(dist<minDist){
 					minDist=dist;
 					rootStartNode=node;
-				}
-			}
-		} //if
-		else{
-			Rectangle shootBounds=shootRoi.getBounds();
-			ImageProcessor shootMask=shootRoi.getMask();
-			List<SkeletonNode> shootNodes=new ArrayList<SkeletonNode>();
-			List<SkeletonNode> rootNodes=new ArrayList<SkeletonNode>();
-			for(SkeletonNode node:graph.getNodes()){
-				int x=node.getX()-shootBounds.x;
-				int y=node.getY()-shootBounds.y;
-				if(x>0 && x<shootBounds.width && y>0 && y<shootBounds.height){
-					if(shootMask.get(x,y)>0){
-						shootNodes.add(node);
-						continue;
-					}
-				}
-				rootNodes.add(node);
-			}
-			
-			double minDist=Double.MAX_VALUE;
-			for(SkeletonNode rNode:rootNodes){
-				for(SkeletonNode sNode:shootNodes){
-					double dist=rNode.distanceSq(sNode);
-					if(dist<minDist){
-						minDist=dist;
-						rootStartNode=rNode;
-					}
 				}
 			}
 			

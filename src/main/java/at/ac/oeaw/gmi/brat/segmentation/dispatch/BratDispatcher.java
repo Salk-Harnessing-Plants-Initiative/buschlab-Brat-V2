@@ -1,6 +1,5 @@
 package at.ac.oeaw.gmi.brat.segmentation.dispatch;
 
-import at.ac.oeaw.gmi.brat.gui.swing.SegmentationGUI;
 import at.ac.oeaw.gmi.brat.gui.fx.log.BratFxLogHandler;
 import at.ac.oeaw.gmi.brat.gui.fx.log.LogQueue;
 import at.ac.oeaw.gmi.brat.gui.swing.log.DebugLogFormatter;
@@ -8,36 +7,25 @@ import at.ac.oeaw.gmi.brat.gui.swing.log.SingleLineFormatter;
 import at.ac.oeaw.gmi.brat.segmentation.plate.PlateSet;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Scene;
 
-
-public class BratDispatcher{
+public class BratDispatcher {
 	private final static ClassLoader classloader = BratDispatcher.class.getClassLoader();
 	private final static Logger log=Logger.getLogger(BratDispatcher.class.getName());
 	private final static Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final static Preferences prefs_expert = prefs_simple.node("expert");
 
-	private SegmentationGUI gui;
-
 	private Map<String,SortedSet<String>> filesets;
-    private DoubleProperty fontSize = new SimpleDoubleProperty(10);
-	private IntegerProperty reds = new SimpleIntegerProperty(200);
-	private IntegerProperty greens = new SimpleIntegerProperty(200);
-	private IntegerProperty blues = new SimpleIntegerProperty(255);
-	private Scene scene;
-	private LogQueue logQueue;
 
 	public BratDispatcher(){
 	}
@@ -68,35 +56,29 @@ public class BratDispatcher{
 	}
 
 	public void runFromGUI(){
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				readBaseDirectory();
-				if(filesets.size()==0){
-					log.warning("No images found. Terminating.");
-					return;
-				}
-				int numThreads = prefs_simple.getInt("numThreads",1);
-				log.info("Starting thread pool.");
-				ThreadPoolExecutor executorPool = new ThreadPoolExecutor(numThreads,numThreads,Long.MAX_VALUE, TimeUnit.NANOSECONDS,new LinkedBlockingQueue<Runnable>());
+		readBaseDirectory();
+		if(filesets.size()==0){
+			log.warning("No images found. Terminating.");
+			return;
+		}
+		int numThreads = prefs_simple.getInt("numThreads",1);
+		log.info("Starting thread pool.");
+		ThreadPoolExecutor executorPool = new ThreadPoolExecutor(numThreads,numThreads,Long.MAX_VALUE, TimeUnit.NANOSECONDS,new LinkedBlockingQueue<Runnable>());
 
-				for(SortedSet<String> workSet:filesets.values()){
-					PlateSet plateSet = new PlateSet(workSet);
-					executorPool.execute(plateSet);
-				}
+		for(SortedSet<String> workSet:filesets.values()){
+			PlateSet plateSet = new PlateSet(workSet);
+			executorPool.execute(plateSet);
+		}
 
-				while(executorPool.getCompletedTaskCount()<executorPool.getTaskCount()){
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				log.info("All threads terminated. Shutting down.");
-				executorPool.shutdown();
+		while(executorPool.getCompletedTaskCount()<executorPool.getTaskCount()){
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		});
-		thread.start();
+		}
+		log.info("All threads terminated. Shutting down.");
+		executorPool.shutdown();
 	}
 
 	public void initLogger(LogQueue logQueue) {
@@ -149,7 +131,7 @@ public class BratDispatcher{
 		Pattern platePattern=Pattern.compile(prefs_expert.get("plateIdentifier",null));
 		assert filenames != null;
 		for(String filename:filenames){
-			String trimmedName=FileUtils.removeExtension(filename);
+			String trimmedName= FileUtils.removeExtension(filename);
 			String setID="";
 			Matcher matcher=expPattern.matcher(trimmedName);
 			if(matcher.find()){

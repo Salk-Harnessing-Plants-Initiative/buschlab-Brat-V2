@@ -6,14 +6,12 @@ import at.ac.oeaw.gmi.brat.segmentation.dispatch.BratDispatcher;
 import at.ac.oeaw.gmi.brat.utility.ExceptionLog;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
-import javafx.event.ActionEvent;
 
 import java.io.File;
 import java.util.Enumeration;
@@ -113,7 +111,7 @@ public class BratFxController {
         clrpckRootRoi.setValue(Color.web(prefs_expert.get("ROOTROI_COLOR","#1E90FF")));
         clrpckSkeleton.setValue(Color.web(prefs_expert.get("SKELETON_COLOR","#808080")));
         clrpckMainRoot.setValue(Color.web(prefs_expert.get("MAINROOT_COLOR","#FF00FF")));
-        clrpckStartPoint.setValue(Color.web(prefs_expert.get("STARTPT_COLOR","#00416B")));
+        clrpckStartPoint.setValue(Color.web(prefs_expert.get("STARTPT_COLOR","#FFB366")));
         clrpckEndPoint.setValue(Color.web(prefs_expert.get("ENDPT_COLOR","#1E90FF")));
         clrpckShootCM.setValue(Color.web(prefs_expert.get("SHOOTCM_COLOR","#FF0000")));
         clrpckGeneral.setValue(Color.web(prefs_expert.get("GENERAL_COLOR","#FF0000")));
