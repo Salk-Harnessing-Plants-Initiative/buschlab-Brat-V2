@@ -1,0 +1,34 @@
+.root {
+    -fx-padding: 10px;
+}
+
+.log-view .list-cell {
+    -fx-background-color: null; // removes alternating list gray cells.
+}
+
+.log-view .list-cell:finest {
+    -fx-text-fill: skyblue;
+}
+
+.log-view .list-cell:finer {
+    -fx-text-fill: royalblue;
+}
+.log-view .list-cell:fine {
+    -fx-text-fill: blue;
+}
+
+.log-view .list-cell:config {
+    -fx-text-fill: lime;
+}
+
+.log-view .list-cell:info {
+    -fx-text-fill: green;
+}
+
+.log-view .list-cell:warning {
+    -fx-text-fill: orange;
+}
+
+.log-view .list-cell:severe {
+    -fx-text-fill: red;
+}

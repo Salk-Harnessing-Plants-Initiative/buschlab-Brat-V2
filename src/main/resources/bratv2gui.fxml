@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<?import at.ac.oeaw.gmi.brat.gui.fx.log.LogBox?>
+<VBox fx:id="vboxRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <BorderPane prefHeight="800.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <center>
+                <Accordion fx:id="accordionMain" BorderPane.alignment="CENTER" expandedPane="$paneBasics">
+                    <panes>
+                        <TitledPane fx:id="paneBasics" animated="true" text="Basics" collapsible="false">
+                            <content>
+                                <VBox>
+                                    <children>
+                                        <GridPane prefWidth="938.0" VBox.vgrow="ALWAYS">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="ALWAYS"/>
+                                                <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0"/>
+                                                <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+                                                <ColumnConstraints hgrow="ALWAYS" percentWidth="25.0"/>
+                                                <ColumnConstraints hgrow="ALWAYS" percentWidth="20.0"/>
+                                                <ColumnConstraints hgrow="ALWAYS"/>
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="2.0" percentHeight="10.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="0.0" percentHeight="10.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="10.0" percentHeight="10.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="10.0" percentHeight="10.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="10.0" percentHeight="10.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="10.0" percentHeight="10.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="10.0" percentHeight="10.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
+                                            </rowConstraints>
+                                            <children>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                    <children>
+                                                        <Label text="Image File Extension"/>
+                                                    </children>
+                                                </HBox>
+                                                <VBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                                    <children>
+                                                        <TextField fx:id="txtfldExtension"/>
+                                                    </children>
+                                                </VBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                    <children>
+                                                        <Label text="Flip Horizontal"/>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                                                    <children>
+                                                        <Label text="Process Time Series"/>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                                                    <children>
+                                                        <Label text="Use Day 0 Images"/>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                                                    <children>
+                                                        <Label text="Number Of Threads"/>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                                                    <children>
+                                                        <CheckBox fx:id="chkboxFlipHorizontal" mnemonicParsing="false"/>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="4">
+                                                    <children>
+                                                        <CheckBox fx:id="chkboxTimeSeries" mnemonicParsing="false"/>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="5">
+                                                    <children>
+                                                        <CheckBox fx:id="chkboxDayZero" mnemonicParsing="false"/>
+                                                    </children>
+                                                </HBox>
+                                                <VBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="6">
+                                                    <children>
+                                                        <Slider fx:id="sliderNumThreads" blockIncrement="1.0"
+                                                                majorTickUnit="4.0" max="32.0" minorTickCount="2"
+                                                                showTickLabels="true" showTickMarks="true"
+                                                                snapToTicks="true" value="1.0"/>
+                                                        <Label fx:id="lblNumThreads"/>
+                                                    </children>
+                                                </VBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="2"
+                                                      GridPane.columnSpan="2" GridPane.halignment="CENTER"
+                                                      GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                                    <children>
+                                                        <TextField fx:id="txtfldBaseDir" GridPane.columnIndex="2"
+                                                                   GridPane.columnSpan="2" HBox.hgrow="ALWAYS"/>
+                                                    </children>
+                                                </HBox>
+                                                <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                    <children>
+                                                        <Label fx:id="lblBaseDir" text="Base Directory"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox alignment="CENTER" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                                                    <children>
+                                                        <Button fx:id="btnBaseDirBrowse" mnemonicParsing="false"
+                                                                onAction="#directorySelect" prefWidth="100.0"
+                                                                text="Browse"/>
+                                                    </children>
+                                                </VBox>
+                                                <HBox alignment="CENTER" GridPane.columnIndex="4" GridPane.rowIndex="7">
+                                                    <children>
+                                                        <Button fx:id="btnStart" mnemonicParsing="false"
+                                                                prefWidth="100.0" text="Start" GridPane.columnIndex="4"
+                                                                onAction="#startRun" GridPane.rowIndex="6"/>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </GridPane>
+                                    </children>
+                                </VBox>
+                            </content>
+                        </TitledPane>
+                        <TitledPane fx:id="paneExpert" animated="true" text="Expert Options">
+                            <content>
+                                <GridPane prefHeight="574.0" prefWidth="739.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="319.0" minWidth="10.0"
+                                                           prefWidth="100.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="612.0" minWidth="10.0"
+                                                           prefWidth="394.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="319.0" minWidth="10.0"
+                                                           prefWidth="18.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="788.0" minWidth="10.0"
+                                                           prefWidth="428.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="484.0" minWidth="10.0"
+                                                           prefWidth="64.0"/>
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                    </rowConstraints>
+                                    <children>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="1">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Experiment Identifier" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldExpIdentifier" alignment="CENTER"
+                                                                   promptText="regex" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="2">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Set Identifier" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldSetIdentifier" alignment="CENTER"
+                                                                   promptText="regex" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="3">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Day Identifier" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldDayIdentifier" alignment="CENTER"
+                                                                   promptText="regex" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="4">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Plate Identifier" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldPlateIdentifier" alignment="CENTER"
+                                                                   promptText="regex" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="5">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Image Resolution" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldImageResolution" alignment="CENTER"
+                                                                   promptText="dpi" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="6">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Seed Minimum Size" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldSeedMinSize" alignment="CENTER"
+                                                                   promptText="mm" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="7">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Seed Maximum Size" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldSeedMaxSize" alignment="CENTER"
+                                                                   promptText="mm" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="8">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Shoot Minimum Thickness" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldShootMinThickness" alignment="CENTER"
+                                                                   promptText="mm" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="9">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Shoot Width Step" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldShootWidthStep" alignment="CENTER"
+                                                                   promptText="pixel" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="10">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Shoot Height Step" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldShootHeightStep" alignment="CENTER"
+                                                                   promptText="pixel" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="11">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Plant Minimum Thickness" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldPlantMinThickness" alignment="CENTER"
+                                                                   promptText="mm" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="12">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Plant Minimum Height" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldPlantMinHeight" alignment="CENTER"
+                                                                   promptText="mm" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="13">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Plant Width Step" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldPlantWidthStep" alignment="CENTER"
+                                                                   promptText="pixel" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="14">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Plant Height Step" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldPlantHeightStep" alignment="CENTER"
+                                                                   promptText="pixel" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="1"
+                                                   GridPane.rowIndex="15">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Plant Tree MaxLevel" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldPlantTreeMaxLevel" alignment="CENTER"
+                                                                   BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="1">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Plant Trackback" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldPlantTrackback" alignment="CENTER"
+                                                                   BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="2">
+                                            <items>
+                                                <VBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Circle Diameter" textAlignment="CENTER"/>
+                                                    </children>
+                                                </VBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldCircleDiameter" alignment="CENTER"
+                                                                   promptText="pixel" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="3">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Label Size" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldLabelSize" alignment="CENTER"
+                                                                   promptText="pixel" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="4">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Label Font" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldLabelFont" alignment="CENTER"
+                                                                   BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="5">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Number Size" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldNumberSize" alignment="CENTER"
+                                                                   promptText="dots" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="6">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Number Font" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <BorderPane>
+                                                    <center>
+                                                        <TextField fx:id="txtfldNumberFont" alignment="TOP_LEFT"
+                                                                   BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="7">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="Shoot ROI Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckShootRoi"
+                                                                     AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="8">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="Root ROI Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckRootRoi" AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="9">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="Skeleton Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckSkeleton"
+                                                                     AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="10">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="Main Root Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckMainRoot"
+                                                                     AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="11">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="Start Point Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckStartPoint"
+                                                                     AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="12">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="End Point Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckEndPoint"
+                                                                     AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="13">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="Shoot CM Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckShootCM" AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="14">
+                                            <items>
+                                                <BorderPane>
+                                                    <center>
+                                                        <Label text="General Color" BorderPane.alignment="CENTER"/>
+                                                    </center>
+                                                </BorderPane>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <ColorPicker fx:id="clrpckGeneral" AnchorPane.bottomAnchor="0.0"
+                                                                     AnchorPane.leftAnchor="0.0"
+                                                                     AnchorPane.rightAnchor="0.0"
+                                                                     AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                        <SplitPane dividerPositions="0.6" GridPane.columnIndex="3"
+                                                   GridPane.rowIndex="15">
+                                            <items>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <Label text="Console Log" textAlignment="CENTER"/>
+                                                    </children>
+                                                </HBox>
+                                                <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                                    <children>
+                                                        <ChoiceBox fx:id="choiceboxLogLevel"
+                                                                   AnchorPane.bottomAnchor="0.0"
+                                                                   AnchorPane.leftAnchor="0.0"
+                                                                   AnchorPane.rightAnchor="0.0"
+                                                                   AnchorPane.topAnchor="0.0"/>
+                                                    </children>
+                                                </AnchorPane>
+                                            </items>
+                                        </SplitPane>
+                                    </children>
+                                </GridPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane fx:id="paneLog" animated="true" text="Logging">
+                            <content>
+                                <LogBox fx:id="logBox" prefHeight="200.0" prefWidth="100.0"/>
+                            </content>
+                        </TitledPane>
+                    </panes>
+                </Accordion>
+            </center>
+            <top>
+                <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+                    <children>
+                        <Label text="Brat V2">
+                            <font>
+                                <Font name="Liberation Mono" size="53.0"/>
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+            </top>
+            <bottom>
+                <VBox alignment="CENTER" prefHeight="40.0">
+                    <children>
+                        <GridPane alignment="CENTER" prefHeight="30.0" prefWidth="1146.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                            </rowConstraints>
+                        </GridPane>
+                        <HBox alignment="CENTER" prefHeight="30.0" BorderPane.alignment="CENTER"/>
+                    </children>
+                </VBox>
+            </bottom>
+        </BorderPane>
+    </children>
+</VBox>
