@@ -56,20 +56,16 @@ public class PlateSet implements Runnable{
 		int nRows=seedingLayout.getExpectedRows();
 		int nCols=seedingLayout.getExpectedColumns();
 		List<List<Point2D>> seedCenters=seedingLayout.getSeedPositions();
-		Shape plateShape=seedingLayout.getPlateShape();		
-		
+		Shape plateShape=seedingLayout.getPlateShape();
+
 		plants=new ArrayList<List<Plant>>();
-		for(int row=0,plantNr=0;row<nRows;++row){
+		for(int row=0, plantNr=0;row<nRows;++row){
 			plants.add(new ArrayList<Plant>());
-			for(int col=0;col<nCols;++col,++plantNr){
-				if(prefs_simple.getBoolean("haveDayZeroImage",true)) {
-					plants.get(row).add(null);
-				}
-				else{
-					plants.get(row).add(new Plant(plantNr));
-				}
+			for(int col=0;col<nCols;++col, ++plantNr){
+				plants.get(row).add(new Plant(plantNr));
 			}
 		}
+
 		PlantDetectorNG plantDetector=new PlantDetectorNG(seedingLayout,plants);
 		Opener opener=new Opener();
 		ImageProcessor currentWorkIp;

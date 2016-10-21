@@ -29,23 +29,54 @@ public class ColorAnalyzer {
 					((values[i]     & 0xff)/255.0)
 			};
 
+//			double max=Math.max(rgb[0],Math.max(rgb[1],rgb[2]));
+//			double min=Math.min(rgb[0],Math.min(rgb[1],rgb[2]));
+//			double sum=rgb[0]+rgb[1]+rgb[2];
+			boolean blueMax=(rgb[2]>rgb[0] && rgb[2]>rgb[1]);
+			
+			if(!blueMax){
+				weights[i]=1.0f/*-(float)(max/sum)*/;
+			}
+		}
+//		new ImagePlus("weights",new FloatProcessor(width,weights.length/width,weights)).show();
+	}
+	
+	public void calcWeights2(int[] values){
+		weights=new float[values.length];
+		for(int i=0;i<values.length;++i){
+			double[] rgb=new double[]{
+					((values[i]>>16 & 0xff)/255.0),
+					((values[i]>>8  & 0xff)/255.0),
+					((values[i]     & 0xff)/255.0)
+			};
+
 			double max=Math.max(rgb[0],Math.max(rgb[1],rgb[2]));
 			double min=Math.min(rgb[0],Math.min(rgb[1],rgb[2]));
 			double sum=rgb[0]+rgb[1]+rgb[2];
 			boolean greenMax=(rgb[1]>rgb[0] && rgb[1]>rgb[2]);
-
+			
 			if(greenMax){
-				weights[i]=(float)((rgb[1]/sum)*(max-min));
+				weights[i]=1.0f-(float)((rgb[2]/sum)/**(max-min)*/);
 			}
 		}
 //		minFilter(weights,width,3);
 	}
 	
 	public List<ShootRegion> getShootRegions(int minSize){
-
+//		ImageProcessor dbgIp=new ByteProcessor(width,weights.length/width);
+//		for(int i=0;i<weights.length;++i){
+//			if(weights[i]>0){
+//				dbgIp.set(i,255);
+//			}
+//		}
+//		new ImageJ();
+//		new ImagePlus("shoot mask dbg",dbgIp).show();
+		
 		coms=new ArrayList<Double>();
 		List<ShootRegion> shootRegions=new ArrayList<ShootRegion>();
+//		int[] shootRegionIndices=new int[weights.length];
 		boolean[] visited=new boolean[weights.length];
+//		int regionNr=1;
 		for(int i=0;i<weights.length;++i){
 			if(visited[i] || weights[i]==0.0f){
 				continue;
@@ -88,7 +119,11 @@ public class ColorAnalyzer {
 					}
 				}
 			}
-
+//			if(regionCnt>=minSize){
+//				for(int idx:curRegIndices){
+//					shootRegionIndices[idx]=regionNr;
+//				}
+//			}
 			if(regionCnt>=minSize){
 				com.setLocation(com.x/regionCnt,com.y/regionCnt);
 				Rectangle shBounds=new Rectangle(upLeft.x,upLeft.y,downRight.x-upLeft.x+1,downRight.y-upLeft.y+1);
@@ -102,6 +137,8 @@ public class ColorAnalyzer {
 				ShootRegion shRegion=new ShootRegion(roiMask,shBounds,com,regionCnt);
 				shootRegions.add(shRegion);
 			}
+//			nRegions=regionNr;
+//			regionNr++;
 		}
 		
 		return shootRegions;
