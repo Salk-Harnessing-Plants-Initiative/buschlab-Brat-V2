@@ -1,38 +1,20 @@
 package at.ac.oeaw.gmi.brat.segmentation.seeds;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.SortedMap;
-import java.util.Stack;
-import java.util.TreeMap;
-
 import at.ac.oeaw.gmi.brat.math.HistogramCorrelation;
-import at.ac.oeaw.gmi.brat.math.KMeans1d;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSpaceConverter;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSrm;
 import at.ac.oeaw.gmi.brat.segmentation.parameters.Parameters;
-
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import ij.gui.WaitForUserDialog;
-import ij.plugin.ContrastEnhancer;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.EllipseFitter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SeedDetector {
 	ImageProcessor ip;
