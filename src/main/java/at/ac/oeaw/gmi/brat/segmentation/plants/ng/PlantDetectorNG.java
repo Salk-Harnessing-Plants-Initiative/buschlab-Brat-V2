@@ -9,7 +9,6 @@ import at.ac.oeaw.gmi.brat.segmentation.algorithm.gradientvectorflow.RidgeDetect
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.gradientvectorflow.RidgeRoi;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonGraph;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
-import at.ac.oeaw.gmi.brat.segmentation.parameters.Parameters;
 import at.ac.oeaw.gmi.brat.segmentation.plants.Plant;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
 
@@ -31,16 +30,20 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 public class PlantDetectorNG {
-	final List<List<Plant>> plants;
-	final SeedingLayout seedingLayout;
+	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
+	private final Preferences prefs_expert = prefs_simple.node("expert");
+	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
+	private final List<List<Plant>> plants;
+	private final SeedingLayout seedingLayout;
 	
-	ImageProcessor origIp;
-	int origWidth;
-	int origHeight;
+	private ImageProcessor origIp;
+	private int origWidth;
+	private int origHeight;
 	
-	List<RidgeRoi> ridgeRois;
+	private List<RidgeRoi> ridgeRois;
 	
 //	List<List<Roi>> detectedShootRois;
 //	List<List<Roi>>	detectedPlantRois;
@@ -487,18 +490,18 @@ public class PlantDetectorNG {
 				IJ.log("plant "+row+","+col);
 				if(prevPlant!=null){
 					searchArea=prevPlant.getBounds();
-					searchArea.x-=Parameters.plantWidthStep/2;
-					searchArea.y-=Parameters.plantHeightStep/2;
-					searchArea.width+=Parameters.plantWidthStep;
-					searchArea.height+=Parameters.plantHeightStep;
+					searchArea.x-=prefs_expert.getInt("shootWidthStep",200)/2;
+					searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
+					searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
+					searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
 					IJ.log("prev plant");
 				}
 				else{
 					searchArea=shootRoi.getBounds();
-					searchArea.x-=Parameters.plantWidthStep/2;
-					searchArea.y-=Parameters.plantHeightStep/2;
-					searchArea.width+=Parameters.plantWidthStep;
-					searchArea.height+=Parameters.plantHeightStep;
+					searchArea.x-=prefs_expert.getInt("shootWidthStep",200)/2;
+					searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
+					searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
+					searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
 					IJ.log("shoot roi");
 				}
 
@@ -611,21 +614,21 @@ public class PlantDetectorNG {
 					}
 
 					if(binRect.x<=10 && searchArea.x>0){
-						searchArea.x-=Parameters.plantWidthStep/2;
-						searchArea.width+=Parameters.plantWidthStep/2;
+						searchArea.x-=prefs_expert.getInt("shootWidthStep",200)/2;
+						searchArea.width+=prefs_expert.getInt("shootWidthStep",200)/2;
 						done=false;
 					}
 					if(binRect.x+binRect.width>=searchArea.width-10 && searchArea.x+searchArea.width<origIp.getWidth()){
-						searchArea.width+=Parameters.plantWidthStep/2;
+						searchArea.width+=prefs_expert.getInt("shootWidthStep",200)/2;
 						done=false;
 					}
 					if(binRect.y<=10 && searchArea.y>0){
-						searchArea.y-=Parameters.plantHeightStep/2;
-						searchArea.height+=Parameters.plantHeightStep/2;
+						searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
+						searchArea.height+=prefs_expert.getInt("shootHeightStep",200)/2;
 						done=false;
 					}
 					if(binRect.y+binRect.height>=searchArea.height-10 && searchArea.y+searchArea.height<origIp.getHeight()){
-						searchArea.height+=Parameters.plantHeightStep/2;
+						searchArea.height+=prefs_expert.getInt("shootHeightStep",200)/2;
 						done=false;
 					}
 					

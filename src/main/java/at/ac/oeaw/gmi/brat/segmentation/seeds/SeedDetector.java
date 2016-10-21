@@ -1,7 +1,6 @@
 package at.ac.oeaw.gmi.brat.segmentation.seeds;
 
 import at.ac.oeaw.gmi.brat.math.HistogramCorrelation;
-import at.ac.oeaw.gmi.brat.segmentation.parameters.Parameters;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -15,11 +14,15 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 public class SeedDetector {
-	ImageProcessor ip;
-	SeedingLayout seedLayout;
-	List<List<Roi>> assignedRois;
+	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
+	private final Preferences prefs_expert = prefs_simple.node("expert");
+	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
+	private ImageProcessor ip;
+	private SeedingLayout seedLayout;
+	private List<List<Roi>> assignedRois;
 	
 	public SeedDetector(ImageProcessor srcIp){
 		this.ip=srcIp;
@@ -95,8 +98,8 @@ public class SeedDetector {
 //		IJ.log("roi size: "+sRoi.getRois().length);
 		for(Roi roi:sRoi.getRois()){
 			Rectangle rr=roi.getBounds();
-			if(rr.width<seedMinAxis/Parameters.mmPerPixel || rr.height<seedMinAxis/Parameters.mmPerPixel ||
-					rr.width>5*seedMaxAxis/Parameters.mmPerPixel || rr.height>5*seedMaxAxis/Parameters.mmPerPixel){
+			if(rr.width<seedMinAxis/mmPerPixel || rr.height<seedMinAxis/mmPerPixel ||
+					rr.width>5*seedMaxAxis/mmPerPixel || rr.height>5*seedMaxAxis/mmPerPixel){
 				continue;
 			}
 			tmpIp.setRoi(roi);
