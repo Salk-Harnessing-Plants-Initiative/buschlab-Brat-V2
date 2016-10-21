@@ -9,7 +9,7 @@ import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
 import ij.IJ;
 import ij.gui.Roi;
-import ij.gui.WaitForUserDialog;
+//import ij.gui.WaitForUserDialog;
 import ij.io.Opener;
 import ij.process.ImageProcessor;
 
@@ -92,8 +92,8 @@ public class PlateSet implements Runnable{
 			sd.identifySeeds(prefs_expert.getDouble("seedMinimumSize",0.1),prefs_expert.getDouble("seedMaximumSize",0.7));
 			List<List<Roi>> detectedSeeds=sd.getAssignedRois();
 			seedCenters=sd.getAssignedRoiCenters();
-			sd.drawSeedingLayout();
-			new WaitForUserDialog("seeding layout").show();
+//			sd.drawSeedingLayout();
+//			new WaitForUserDialog("seeding layout").show();
 
 			int plantNr=0;
 			for(int row=0;row<nRows;++row){
@@ -127,6 +127,7 @@ public class PlateSet implements Runnable{
 
 				log.info("working on file: '" + fileName + "'");
 				currentWorkIp = opener.openImage(baseDirectory, fileName).getProcessor();
+				seedingLayout.readStartPoints(baseDirectory,fileName);
 
 				if (prefs_simple.getBoolean("flipHorizontal", true)) {
 					currentWorkIp.flipHorizontal();
@@ -140,9 +141,17 @@ public class PlateSet implements Runnable{
 
 				//TODO check if corrected ip is valid
 
+				List<List<Point2D>> transformedSeedPos=seedingLayout.getTransformedPositions(plateDetector.getRotation(),plateDetector.getReferencePt());
+				for(int row=0;row<nRows;++row){
+					for(int col=0;col<nCols;++col){
+						plants.get(row).get(col).setSeedCenter(transformedSeedPos.get(row).get(col));
+					}
+				}
+
 				plantDetector.setIp(currentWorkIp);
 				plantDetector.detectShoots(fileNr, 10.0);
-				plantDetector.detectRootParts(fileNr);
+				plantDetector.detectRootPartsGVF(fileNr,10.0,10);
+//				plantDetector.detectRootParts(fileNr);
 
 				createTopologies(fileNr);
 				calcTraits(fileNr);
@@ -182,7 +191,7 @@ public class PlateSet implements Runnable{
 			}
 		}
 	}
-	
+
 	public void createTopologies(int time){
 		for(List<Plant> plantRow:plants){
 			for(Plant plant:plantRow){
@@ -193,19 +202,25 @@ public class PlateSet implements Runnable{
 					continue;
 				}
 				IJ.log("Plant "+plant.getPlantID()+": creating topology");
+
 				SkeletonNode stNodeGuess=null;
-				if(prefs_expert.get("startpointmethod","earliest").equals("earliest")){
+				if(prefs_expert.get("startpointmethod","earliest").equals("seedPt")){
+					Point2D seedCenter=plant.getSeedCenter();
+					stNodeGuess=new SkeletonNode((int)(seedCenter.getX()+0.5),(int)(seedCenter.getY()+0.5));
+				}
+				else if(prefs_expert.get("startpointmethod","earliest").equals("earliest")){
 					for(int i=0;i<time;++i){
 						if((stNodeGuess=plant.getStartNode(i))!=null){
 							break;
 						}
 					}
 				}
+
 				plant.createTopology(time,stNodeGuess);
 			}
 		}
 	}
-	
+
 	public void calcTraits(int time){
 		for(List<Plant> plantRow:plants){
 			for(Plant plant:plantRow){

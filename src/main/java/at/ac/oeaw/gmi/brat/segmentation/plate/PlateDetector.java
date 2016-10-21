@@ -330,8 +330,32 @@ public class PlateDetector {
 		IJ.log("ref pt: "+referencePt.getX()+","+referencePt.getY());
 		
 	}
-	
+
 	public ImageProcessor getCorrectedIp(){
+		double si=Math.sin(rotAngle);
+		double co=Math.cos(rotAngle);
+//
+		Shape tShape=transformShape(scaleFactor,-rotAngle,new double[]{0,0});
+		Rectangle shapeBounds=tShape.getBounds();
+		ImageProcessor shapeMask=new ShapeRoi(tShape).getMask();
+		ImageProcessor dstIp=origIp.createProcessor(shapeBounds.width,shapeBounds.height);
+		Rectangle outlineBounds=convexOutline.getBounds();
+		int xOffset=outlineBounds.width-shapeBounds.width;
+		int yOffset=outlineBounds.height-shapeBounds.height;
+		referencePt=new Point2D.Double(outlineBounds.x+xOffset,outlineBounds.y+yOffset); //TODO: should be done when calculating rotation
+		for(int y=0;y<dstIp.getHeight();++y){
+			for(int x=0;x<dstIp.getWidth();++x){
+				if(shapeMask.get(x,y)>0){
+					int rx=(int)(x*co-y*si+0.5)+outlineBounds.x+xOffset;
+					int ry=(int)(x*si+y*co+0.5)+outlineBounds.y+yOffset;
+					dstIp.set(x,y,origIp.get(rx,ry));
+				}
+			}
+		}
+		return dstIp;
+	}
+
+	public ImageProcessor getCorrectedIp_old(){
 //		ImageProcessor workIp=origIp.duplicate();
 //		workIp.setColor(0);
 //		workIp.fillOutside(convexRoi);
