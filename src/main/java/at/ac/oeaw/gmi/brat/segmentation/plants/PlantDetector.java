@@ -1,8 +1,23 @@
 package at.ac.oeaw.gmi.brat.segmentation.plants;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.prefs.Preferences;
+
 import at.ac.oeaw.gmi.brat.math.PlaneFit;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.*;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.CPoint;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSpaceConverter;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.EdgeFilter;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.PixelUtils;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonGraph;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
@@ -11,17 +26,12 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-//import ij.gui.WaitForUserDialog;
+import ij.gui.WaitForUserDialog;
 import ij.plugin.ContrastEnhancer;
 import ij.plugin.filter.EDM;
+import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.ThresholdToSelection;
 import ij.process.*;
-
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.util.*;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 public class PlantDetector {
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
@@ -34,7 +44,7 @@ public class PlantDetector {
 	private int origWidth;
 	private int origHeight;
 	
-	public PlantDetector(SeedingLayout seedingLayout, List<List<Plant>> plants){
+	public PlantDetector(SeedingLayout seedingLayout,List<List<Plant>> plants){
 		this.seedingLayout=seedingLayout;
 		this.plants=plants;
 	}
@@ -44,7 +54,7 @@ public class PlantDetector {
 		this.origWidth=ip.getWidth();
 		this.origHeight=ip.getHeight();
 	}
-	
+
 	public ImageProcessor blueRemoval(ImageProcessor ip){
 		for(int i=0;i<ip.getPixelCount();++i){
 			int pixVal=ip.get(i);
@@ -64,7 +74,7 @@ public class PlantDetector {
 				ip.set(i,0);
 			}
 		}
-		
+
 		return ip;
 	}
 
@@ -125,7 +135,7 @@ public class PlantDetector {
 				if(searchArea.y+searchArea.height>origIp.getHeight()){
 					searchArea.height-=searchArea.y+searchArea.height-origIp.getHeight();
 				}
-				
+
 				ImageProcessor shootBinaryIp=new ByteProcessor(searchArea.width,searchArea.height);
 				ImageProcessor shootBinaryIp2=new ByteProcessor(searchArea.width,searchArea.height);
 				ImageProcessor shootIp=new ByteProcessor(searchArea.width,searchArea.height);
@@ -149,7 +159,7 @@ public class PlantDetector {
 						}
 					}
 				}
-				
+
 				EDM edm=new EDM();
 				edm.toEDM(shootBinaryIp);
 				edm.toEDM(shootBinaryIp2);
@@ -216,7 +226,7 @@ public class PlantDetector {
 				}
 				shootCoM.x/=shootCnt;
 				shootCoM.y/=shootCnt;
-				
+
 				shootCoM.x+=cHull.getBounds().x+searchArea.x;
 				shootCoM.y+=cHull.getBounds().y+searchArea.y;
 				plant.setShootCoM(shootCoM);
@@ -227,10 +237,55 @@ public class PlantDetector {
 			}
 		}
 	}
-
-	public void detectRootParts(int timePt){
+	
+	
+//	public void detectRootParts2(int timePt){
+//		int w=origIp.getWidth();
+//		int h=origIp.getHeight();
+//		ImageProcessor blurredIp=origIp.convertToByte(false);
+////		ImageProcessor blurredIp=subtractPlane(origIp,new Rectangle(0,0,w,h));
+//		GaussianBlur gb=new GaussianBlur();
+//		gb.blurGaussian(blurredIp,5,5,0.001);
+//		blurredIp=subtractPlane(blurredIp,new Rectangle(0,0,w,h));
+//		FloatProcessor gradMag=(FloatProcessor)blurredIp.convertToFloat();
+//		FloatProcessor gradDir=(FloatProcessor)blurredIp.convertToFloat();
+//		getGradientMagnitudeAndDirection(gradMag,gradDir);
+//
+//		ImageProcessor gradEdge=new ByteProcessor(w,h);
+//		int mdist=1;
+//		for(int y=mdist;y<h-mdist;++y){
+//			for(int x=mdist;x<w-mdist;++x){
+//				if(gradEdge.get(x,y)>0){
+//					continue;
+//				}
+//					float dir1=gradDir.getf(x+mdist,y);
+//					float dir2=gradDir.getf(x-mdist,y);
+//					if(dir1*dir2<0){
+//						gradEdge.set(x,y,255);
+//						continue;
+//					}
+//
+//					dir1=Math.abs(dir1)-(float)Math.PI/2.0f;
+//					dir2=Math.abs(dir2)-(float)Math.PI/2.0f;
+//					if(dir1*dir2<0){
+//						gradEdge.set(x,y,255);
+//						continue;
+//					}
+//			}
+//		}
+//		new ImagePlus("grad edge",gradEdge).show();
+//		new ImagePlus("mag",gradMag).show();
+//		new ImagePlus("dir",gradDir).show();
+//
+//	}
+	
+	public void detectRootParts(int timePt){ //List<List<Point2D>> centerGuesses,List<List<Point2D>> seedPts){
+//		detectedPlantRois=new ArrayList<List<Roi>>();
+//		double plantMinThickness=Parameters.plantMinThickness/Parameters.mmPerPixel;
+//		double plantMinHeight=Parameters.plantMinHeight/Parameters.mmPerPixel;
 		EDM edm=new EDM();
 		for(int row=0;row<plants.size();++row){
+//			detectedPlantRois.add(new ArrayList<Roi>());
 			for(int col=0;col<plants.get(row).size();++col){
 				Plant plant=plants.get(row).get(col);
 				if(plant==null){
@@ -242,30 +297,38 @@ public class PlantDetector {
 				}
 				shootRoi=(Roi)shootRoi.clone();
 				Rectangle shootRect=shootRoi.getBounds();
-				
+
 				Rectangle searchArea=null;
 
 				Roi prevPlant=plant.getRootRoi(timePt-1);
 				IJ.log("plant "+row+","+col);
-				if(prevPlant!=null) {
-					searchArea = prevPlant.getBounds();
+				if(prevPlant!=null){
+//					prevRect=prevPlant.getBounds();
+					searchArea=prevPlant.getBounds();
+					searchArea.x-=prefs_expert.getInt("shootWidthStep",200)/2;
+					searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
+					searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
+					searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
 					IJ.log("prev plant");
 				}
-				else {
-					searchArea = shootRoi.getBounds();
+				else{
+					searchArea=shootRoi.getBounds();
+					searchArea.x-=prefs_expert.getInt("shootWidthStep",200)/2;
+					searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
+					searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
+					searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
 					IJ.log("shoot roi");
 				}
-				searchArea.x-=prefs_expert.getInt("plantWidthStep",200)/2;
-				searchArea.y-=prefs_expert.getInt("plantHeightStep",200)/2;
-				searchArea.width+=prefs_expert.getInt("plantWidthStep",200);
-				searchArea.height+=prefs_expert.getInt("plantHeightStep",200);
 
+				
+//				Rectangle searchRect=new Rectangle((int)(trackStart.getX()-searchArea./2.0),(int)(trackStart.getY()-searchWidth/2.0),searchWidth,searchWidth);
+				
 				ContrastEnhancer ce=new ContrastEnhancer();
 				ImageProcessor diffIp=origIp.duplicate();
 				ImageProcessor binaryIp=null;
 				Roi binaryRoi=null;
 				ThresholdToSelection ts=new ThresholdToSelection();
-				
+
 				boolean done=true;
 				int loopcnt=0;
 				Point trackPt=null;
@@ -292,7 +355,7 @@ public class PlantDetector {
 
 					binaryIp=getBinary(diffIp.duplicate());
 					ImageProcessor skeletonIp=getSkeleton((ByteProcessor)binaryIp.duplicate(),shootRoi);
-					
+
 					ImageProcessor trackSearchIp=new ByteProcessor(searchArea.width,searchArea.height);
 					trackSearchIp.setColor(255);
 					trackSearchIp.draw(shootRoi);
@@ -531,42 +594,99 @@ public class PlantDetector {
 		return rootSkel;
 	}
 	
-	private void connectSkeletonParts(ImageProcessor ip,int fgValue,double maxRange){
-		int w=ip.getWidth();
-		int h=ip.getHeight();
-		List<Point> skeletonPts=new ArrayList<Point>();
-		List<Point> skeletonEndPts=new ArrayList<Point>();
-		for(int y=0;y<h;++y){
-			for(int x=0;x<w;++x){
-				if(ip.get(x,y)==fgValue){
-					int nNeigh= PixelUtils.getNeighbourCnt8(ip,x,y);
-					if(nNeigh==1){
-						skeletonEndPts.add(new Point(x,y));
-					}
-					else{
-					skeletonPts.add(new Point(x,y));
-					}
-				}
-			}
-		}
-		
-		double minDist=Double.MAX_VALUE;
-		double sqrt2=Math.sqrt(2.0);
-		ip.setColor(fgValue);
-		for(Point ePt:skeletonEndPts){
-			Point connectPt=null;
-			for(Point pt:skeletonPts){
-				double dist=ePt.distance(pt);
-				if(dist<=maxRange && dist<minDist && dist>sqrt2){
-					minDist=dist;
-					connectPt=pt;
-				}
-			}
-			if(connectPt!=null){
-				ip.drawLine(ePt.x,ePt.y,connectPt.x,connectPt.y);
-			}
-		}
-	}
+//	private ImageProcessor getSkeletonGradientDirection(ImageProcessor diffIp){
+//		int width=diffIp.getWidth();
+//		int height=diffIp.getHeight();
+//
+//		BinaryProcessor binaryIp=new BinaryProcessor(new ByteProcessor(width,height));
+//		for(int i=0;i<diffIp.getPixelCount();++i){
+//			if(diffIp.get(i)>=5){
+//				binaryIp.set(i,255);
+//			}
+//		}
+//
+//		ImageProcessor dmapIp=binaryIp.duplicate();
+//		EDM edm=new EDM();
+//		edm.toEDM(dmapIp);
+//
+//		ImageProcessor blurredIp=diffIp.duplicate();
+//		GaussianBlur gb=new GaussianBlur();
+//		gb.blurGaussian(blurredIp,5,5,0.001);
+//		FloatProcessor gradDirIp=blurredIp.convertToFloatProcessor();
+//		getGradientMagnitudeAndDirection(null,gradDirIp);
+////		new ImagePlus("grad dir",gradDirIp).show();
+////		RankFilters rf=new RankFilters();
+////		rf.rank(gradDirIp,5,RankFilters.MEDIAN);
+//		ImageProcessor gradEdge=new ByteProcessor(width,height);
+//		int mdist=1;
+//		for(int y=mdist;y<height-mdist;++y){
+//			for(int x=mdist;x<width-mdist;++x){
+//				if(gradEdge.get(x,y)>0){
+//					continue;
+//				}
+//				if(dmapIp.get(x,y)>3 && binaryIp.get(x,y)>0){
+//					float dir1=gradDirIp.getf(x+mdist,y);
+//					float dir2=gradDirIp.getf(x-mdist,y);
+//					if(dir1*dir2<0){
+//						gradEdge.set(x,y,255);
+//						continue;
+//					}
+//
+//					dir1=Math.abs(dir1)-(float)Math.PI/2.0f;
+//					dir2=Math.abs(dir2)-(float)Math.PI/2.0f;
+//					if(dir1*dir2<0){
+//						gradEdge.set(x,y,255);
+//						continue;
+//					}
+//				}
+//			}
+//		}
+//
+//		BinaryProcessor gradEdgeSkel=new BinaryProcessor((ByteProcessor)gradEdge);
+//		fillHoles(gradEdgeSkel,255,0);
+//		gradEdgeSkel.invert();
+//		gradEdgeSkel.skeletonize();
+//
+//		return gradEdgeSkel;
+//	}
+//
+//
+//	private void connectSkeletonParts(ImageProcessor ip,int fgValue,double maxRange){
+//		int w=ip.getWidth();
+//		int h=ip.getHeight();
+//		List<Point> skeletonPts=new ArrayList<Point>();
+//		List<Point> skeletonEndPts=new ArrayList<Point>();
+//		for(int y=0;y<h;++y){
+//			for(int x=0;x<w;++x){
+//				if(ip.get(x,y)==fgValue){
+//					int nNeigh=PixelUtils.getNeighbourCnt8(ip,x,y);
+//					if(nNeigh==1){
+//						skeletonEndPts.add(new Point(x,y));
+//					}
+//					else{
+//					skeletonPts.add(new Point(x,y));
+//					}
+//				}
+//			}
+//		}
+//
+//		double minDist=Double.MAX_VALUE;
+//		double sqrt2=Math.sqrt(2.0);
+//		ip.setColor(fgValue);
+//		for(Point ePt:skeletonEndPts){
+//			Point connectPt=null;
+//			for(Point pt:skeletonPts){
+//				double dist=ePt.distance(pt);
+//				if(dist<=maxRange && dist<minDist && dist>sqrt2){
+//					minDist=dist;
+//					connectPt=pt;
+//				}
+//			}
+//			if(connectPt!=null){
+//				ip.drawLine(ePt.x,ePt.y,connectPt.x,connectPt.y);
+//			}
+//		}
+//	}
 	
 	private double distancePtToSegmentBounds(Point pt,TreeSegment seg){
 		if (pt.x<seg.xMin) { 
@@ -604,7 +724,7 @@ public class PlantDetector {
             }
         }
 	}
-	
+
 
 	
     // Binary fill by Gabriel Landini, G.Landini at bham.ac.uk
@@ -727,7 +847,7 @@ public class PlantDetector {
 		return diffIp;
 	}
 	
-	private List<TreePoint> getNeighbours4(ImageProcessor ip, TreePoint pos, int highThreshold, int lowThreshold, boolean[][] visited){
+	private List<TreePoint> getNeighbours4(ImageProcessor ip,TreePoint pos,int highThreshold,int lowThreshold,boolean[][] visited){
 		List<TreePoint> neighbours=new ArrayList<TreePoint>();
 		int level=pos.level;
 		if(pos.x>0){
@@ -788,7 +908,7 @@ public class PlantDetector {
 		
 		List<Point> usedPixels=new ArrayList<Point>();
 		for(Point endPt:skelPixels){
-			List<Point> neighbours= PixelUtils.getNeighbours(endPt,skelIp,null);
+			List<Point> neighbours=PixelUtils.getNeighbours(endPt,skelIp,null);
 			Point curPt=null;
 			Point tmpPt=neighbours.get(0);
 			if(edmIp.get(tmpPt.x,tmpPt.y)>endPt.distance(tmpPt)){
@@ -803,7 +923,7 @@ public class PlantDetector {
 				if(curEDM>curDist){
 					assignedCenters.put(endPt,curPt);
 
-					List<Point> nextNeighbours= PixelUtils.getNeighbours(curPt,skelIp,0);
+					List<Point> nextNeighbours=PixelUtils.getNeighbours(curPt,skelIp,0);
 					int maxEDM=0;
 					curPt=null;
 					for(Point p:nextNeighbours){
@@ -822,7 +942,7 @@ public class PlantDetector {
 		
 		return new HashMap<Point,Integer>();
 	}
-	
+
 	public void calcCieLabDistance(){
 		ImageProcessor workIp=origIp.duplicate();
 //		new ContrastEnhancer().equalize(workIp);
@@ -845,13 +965,13 @@ public class PlantDetector {
 			rgbModes[i]=rgbStack.getProcessor(i+1).getStatistics().mode;
 		}
 		
-		double[] labRef= ColorSpaceConverter.RGBToCieLab(rgbModes);
+		double[] labRef=ColorSpaceConverter.RGBToCieLab(rgbModes);
 		ImageProcessor distIp=new ByteProcessor(origWidth,origHeight);
 		for(int y=0;y<origHeight;++y){
 			for(int x=0;x<origWidth;++x){
 				double dist2=0;
-				double[] lab= ColorSpaceConverter.RGBToCieLab(new int[]{(int)rgbStack.getVoxel(x,y,0),(int)rgbStack.getVoxel(x,y,1),(int)rgbStack.getVoxel(x,y,2)});
-				int dist=(int) ColorSpaceConverter.distanceCie76(lab, labRef);
+				double[] lab=ColorSpaceConverter.RGBToCieLab(new int[]{(int)rgbStack.getVoxel(x,y,0),(int)rgbStack.getVoxel(x,y,1),(int)rgbStack.getVoxel(x,y,2)});
+				int dist=(int)ColorSpaceConverter.distanceCie76(lab, labRef);
 				if(dist>255)
 					dist=255;
 				
@@ -859,7 +979,7 @@ public class PlantDetector {
 					
 			}
 		}
-//		new ImagePlus("rgb distance",distIp).show();
+		new ImagePlus("rgb distance",distIp).show();
 		
 	}
 	
@@ -897,8 +1017,8 @@ public class PlantDetector {
 				distIp.set(x,y,maxDist);
 			}
 		}
-//		new ImagePlus("rgb distance",distIp).show();
-//		new WaitForUserDialog("rgb dist").show();
+		new ImagePlus("rgb distance",distIp).show();
+		new WaitForUserDialog("rgb dist").show();
 		return distIp;
 		
 	}
@@ -917,7 +1037,7 @@ public class PlantDetector {
 		EdgeFilter ef=new EdgeFilter();
 		ef.convolve(workIp);
 		ef.nonMaxSup();
-//		new ImagePlus("gradient mag",ef.getGradientMagnitudeProcessor().convertToByte(true)).show();
+		new ImagePlus("gradient mag",ef.getGradientMagnitudeProcessor().convertToByte(true)).show();
 	}
 	
 	public void detectEdges(){
@@ -927,18 +1047,18 @@ public class PlantDetector {
 		EdgeFilter ef=new EdgeFilter();
 		ef.convolve(workIp);
 		ef.nonMaxSup();
-//		new ImagePlus("gradient mag",ef.getGradientMagnitudeProcessor().convertToByte(true)).show();
+		new ImagePlus("gradient mag",ef.getGradientMagnitudeProcessor().convertToByte(true)).show();
 		ImageProcessor gradDir=ef.getDirectionProcessor();
 		for(int i=0;i<gradDir.getPixelCount();++i){
 			gradDir.set(i,gradDir.get(i)*30);
 		}
-//		new ImagePlus("gradient dir",gradDir).show();
+		new ImagePlus("gradient dir",gradDir).show();
 	}
 	
 	public void convertToBaseColors(){
 		int w=origIp.getWidth();
 		int h=origIp.getHeight();
-		
+
 		ImageProcessor dstIp=new ColorProcessor(w,h);
 		for(int i=0;i<origIp.getPixelCount();++i){
 			Color dstColor=null;
@@ -972,8 +1092,8 @@ public class PlantDetector {
 			dstIp.set(i,dstColor.getRGB());
 		}
 		
-//		new ImagePlus("base colors",dstIp).show();
-//		new WaitForUserDialog("base colors").show();
+		new ImagePlus("base colors",dstIp).show();
+		new WaitForUserDialog("base colors").show();
 	}
 }
 

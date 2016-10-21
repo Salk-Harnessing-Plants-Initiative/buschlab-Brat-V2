@@ -1,9 +1,26 @@
 package at.ac.oeaw.gmi.brat.segmentation.plate;
 
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.prefs.Preferences;
+
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.EdgeFilter;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT.HoughLine;
+
 import ij.IJ;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
@@ -12,18 +29,7 @@ import ij.plugin.ContrastEnhancer;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 public class PlateDetector {
-	private final static Logger log=Logger.getLogger(PlateDetector.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getInt("resolution",1200);
@@ -32,15 +38,15 @@ public class PlateDetector {
 	private ImageProcessor origIp;
 	private int width;  //orig width
 	private int height; //orig height
-	
+
 	private List<HoughLine> houghlines;
 	private Point2D htCenter;
 	private Map<Double,List<Integer>> parallelLines;
-	
+
 	private double rotAngle;
 	private Polygon convexOutline;
 	private Point2D referencePt;
-	
+
 
 	public PlateDetector(ImageProcessor origIp,double scaleFactor,Shape plateShape){
 		this.scaleFactor=scaleFactor;
@@ -79,14 +85,14 @@ public class PlateDetector {
 		ImageProcessor workIp=origIp; //ef.getGradientMagnitudeProcessor().convertToByte(true);
 
 		byte[][] pixelStatus=new byte[width][height];
-//		int[][] outlineCols=new int[width][2];
-//		for(int i=0;i<width;++i){
-//			outlineCols[i]=new int[]{Integer.MAX_VALUE,Integer.MIN_VALUE};
-//		}
-//		int[][] outlineRows=new int[height][2];
-//		for(int i=0;i<height;++i){
-//			outlineRows[i]=new int[]{Integer.MAX_VALUE,Integer.MIN_VALUE};
-//		}
+		int[][] outlineCols=new int[width][2];
+		for(int i=0;i<width;++i){
+			outlineCols[i]=new int[]{Integer.MAX_VALUE,Integer.MIN_VALUE};
+		}
+		int[][] outlineRows=new int[height][2];
+		for(int i=0;i<height;++i){
+			outlineRows[i]=new int[]{Integer.MAX_VALUE,Integer.MIN_VALUE};
+		}
 		Stack<int[]> pStack=new Stack<int[]>();
 		pStack.push(new int[]{width/2,height/2});
 		pixelStatus[width/2][height/2]=1;
@@ -267,8 +273,6 @@ public class PlateDetector {
 
 			parallelLines.get(angle).add(i);
 		}
-		
-		return;
 	}
 	
 	private void searchBestRoiFit(ImageProcessor ip){
@@ -330,32 +334,8 @@ public class PlateDetector {
 		IJ.log("ref pt: "+referencePt.getX()+","+referencePt.getY());
 		
 	}
-
+	
 	public ImageProcessor getCorrectedIp(){
-		double si=Math.sin(rotAngle);
-		double co=Math.cos(rotAngle);
-//
-		Shape tShape=transformShape(scaleFactor,-rotAngle,new double[]{0,0});
-		Rectangle shapeBounds=tShape.getBounds();
-		ImageProcessor shapeMask=new ShapeRoi(tShape).getMask();
-		ImageProcessor dstIp=origIp.createProcessor(shapeBounds.width,shapeBounds.height);
-		Rectangle outlineBounds=convexOutline.getBounds();
-		int xOffset=outlineBounds.width-shapeBounds.width;
-		int yOffset=outlineBounds.height-shapeBounds.height;
-		referencePt=new Point2D.Double(outlineBounds.x+xOffset,outlineBounds.y+yOffset); //TODO: should be done when calculating rotation
-		for(int y=0;y<dstIp.getHeight();++y){
-			for(int x=0;x<dstIp.getWidth();++x){
-				if(shapeMask.get(x,y)>0){
-					int rx=(int)(x*co-y*si+0.5)+outlineBounds.x+xOffset;
-					int ry=(int)(x*si+y*co+0.5)+outlineBounds.y+yOffset;
-					dstIp.set(x,y,origIp.get(rx,ry));
-				}
-			}
-		}
-		return dstIp;
-	}
-
-	public ImageProcessor getCorrectedIp_old(){
 //		ImageProcessor workIp=origIp.duplicate();
 //		workIp.setColor(0);
 //		workIp.fillOutside(convexRoi);
@@ -375,6 +355,7 @@ public class PlateDetector {
 		Rectangle outlineBounds=convexOutline.getBounds();
 		int xOffset=outlineBounds.width-shapeBounds.width;
 		int yOffset=outlineBounds.height-shapeBounds.height;
+		referencePt=new Point2D.Double(outlineBounds.x+xOffset,outlineBounds.y+yOffset); //TODO: should be done when calculating rotation
 		for(int y=0;y<dstIp.getHeight();++y){
 			for(int x=0;x<dstIp.getWidth();++x){
 				if(shapeMask.get(x,y)>0){

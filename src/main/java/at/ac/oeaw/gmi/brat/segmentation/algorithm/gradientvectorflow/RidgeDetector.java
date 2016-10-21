@@ -360,7 +360,7 @@ public class RidgeDetector {
 			binaryIp.drawOval(x-rad,y-rad,2*rad,2*rad);
 		}
 		
-//		new ImagePlus("create outline dbg",binaryIp).show();
+		new ImagePlus("create outline dbg",binaryIp).show();
 	}
 	
 //	public void detectRidgeRois(ImageProcessor valIp){

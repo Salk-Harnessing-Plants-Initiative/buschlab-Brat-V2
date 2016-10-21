@@ -3,10 +3,12 @@ package at.ac.oeaw.gmi.brat.segmentation.plants.ng;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.Wand;
+import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 public class ShootRegion {
 	private byte[] pixels;

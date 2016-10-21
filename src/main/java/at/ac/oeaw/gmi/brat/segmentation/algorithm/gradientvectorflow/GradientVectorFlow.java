@@ -109,7 +109,7 @@ public class GradientVectorFlow {
 			}
 		}
 		
-//		new ImagePlus("recreated",new FloatProcessor(m,n,out)).show();
+		new ImagePlus("recreated",new FloatProcessor(m,n,out)).show();
 	}
 	
 	private void normalizeGradient(double[] fx,double[] fy){

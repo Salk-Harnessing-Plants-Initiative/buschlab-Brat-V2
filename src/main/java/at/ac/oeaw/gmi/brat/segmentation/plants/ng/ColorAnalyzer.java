@@ -1,6 +1,14 @@
 package at.ac.oeaw.gmi.brat.segmentation.plants.ng;
 
-import java.awt.*;
+import ij.ImageJ;
+import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

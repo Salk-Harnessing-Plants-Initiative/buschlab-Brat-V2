@@ -16,8 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.logging.Handler;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import java.util.prefs.Preferences;
 
 public class BratFxApp extends Application {

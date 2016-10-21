@@ -3,35 +3,34 @@ package at.ac.oeaw.gmi.brat.segmentation.seeds;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.math.KMeans1d;
+import at.ac.oeaw.gmi.brat.segmentation.parameters.Parameters;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
 
 public class SeedingLayout {
-	private final static Logger log=Logger.getLogger(SeedingLayout.class.getName());
-	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
-	private final Preferences prefs_expert = prefs_simple.node("expert");
-	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
-
-	private double scaleFactor;
-	private Shape plateShape;
 	
-	private int expectedRows;
-	private int expectedColumns;
-	private List<List<Point2D>> seedPositions;
-	private List<Double> rowYPositions;
+	double scaleFactor;
+	Shape plateShape;
+	
+	int expectedRows;
+	int expectedColumns;
+	List<List<Point2D>> seedPositions;
+	List<Double> rowYPositions;
 	
 	public SeedingLayout(){
 		this.scaleFactor=0.5;
 		this.expectedRows=2;
 		this.expectedColumns=12;
 		
-		float w=(float)(116.0f/mmPerPixel);
+		float w=(116.0f*Parameters.resolution/25.4f);
 		this.plateShape=new RoundRectangle2D.Float(0f,0f,w,w,1200f,1200f);
 		
 		seedPositions=new ArrayList<List<Point2D>>();
@@ -168,14 +167,14 @@ public class SeedingLayout {
 	public List<List<Point2D>> getTransformedPositions(double rotation,Point2D referencePt){
 		List<List<Point2D>> correctedPos=new ArrayList<List<Point2D>>();
 		
-		double si=Math.sin(rotation);
-		double co=Math.cos(rotation);
+		double si=Math.sin(-rotation);
+		double co=Math.cos(-rotation);
 		
 		for(List<Point2D> rowPts:seedPositions){
 			List<Point2D> tmpPositions=new ArrayList<Point2D>();
 			for(Point2D pt:rowPts){
-				double x=pt.getX()*co-pt.getY()*si+referencePt.getX();
-				double y=pt.getX()*si+pt.getY()*co+referencePt.getY();
+				double x=(pt.getX()-referencePt.getX())*co-(pt.getY()-referencePt.getY())*si;//+referencePt.getX();
+				double y=(pt.getX()-referencePt.getX())*si+(pt.getY()-referencePt.getY())*co;//+referencePt.getY();
 				tmpPositions.add(new Point2D.Double(x,y));
 			}
 			correctedPos.add(tmpPositions);
@@ -243,7 +242,7 @@ public class SeedingLayout {
 	}
 
 	public void readStartPoints(String baseDirectory, String imgFileName) {
-		String stptFilename="StartPoints_"+ FileUtils.removeExtension(imgFileName)+".txt";
+		String stptFilename="StartPoints_"+FileUtils.removeExtension(imgFileName)+".txt";
 		File stPtFile=new File(baseDirectory,stptFilename);
 
 		BufferedReader br=null;
@@ -283,6 +282,8 @@ public class SeedingLayout {
 				}
 			}
 		}
-
+		
 	}
+	
+	
 }

@@ -1,15 +1,20 @@
 package at.ac.oeaw.gmi.brat.segmentation.plants;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonGraph;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
+
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.process.ImageProcessor;
-
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.util.*;
-import java.util.List;
 
 public class Plant {
 	String plantID;

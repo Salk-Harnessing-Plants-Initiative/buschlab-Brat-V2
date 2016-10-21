@@ -6,12 +6,15 @@ import at.ac.oeaw.gmi.brat.segmentation.dispatch.BratDispatcher;
 import at.ac.oeaw.gmi.brat.utility.ExceptionLog;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
+import javafx.event.ActionEvent;
 
 import java.io.File;
 import java.util.Enumeration;
