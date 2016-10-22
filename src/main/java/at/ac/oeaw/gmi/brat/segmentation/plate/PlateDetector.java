@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
@@ -30,6 +31,7 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 public class PlateDetector {
+	final private static Logger log=Logger.getLogger(PlateDetector.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getInt("resolution",1200);
@@ -103,7 +105,7 @@ public class PlateDetector {
 			int[] nCoords=new int[2];
 			int nVal=0;
 			int[] nRgbDiff;
-			
+
 			for(int i=0;i<4;++i){
 				switch(i){
 				case 0:	nCoords[0]=curCoords[0]-1;
@@ -206,7 +208,8 @@ public class PlateDetector {
 			xWand+=width/7;
 			loopCnt++;
 		}
-		IJ.log("rotation="+rotAngle);
+		log.info(String.format("plate detected at %s",convexOutline.getBounds().toString()));
+		log.info("rotation="+rotAngle);
 	}
 	
 	private boolean addPixel(int refVal,int pixVal,int maxColorRise){
@@ -329,9 +332,8 @@ public class PlateDetector {
 				
 			}
 		}
-		IJ.log("best fittness="+roiFittness);
-		
-		IJ.log("ref pt: "+referencePt.getX()+","+referencePt.getY());
+		log.fine("best fittness="+roiFittness);
+		log.fine("reference point: "+referencePt.getX()+","+referencePt.getY());
 		
 	}
 	

@@ -154,7 +154,6 @@ public class SkeletonSubGraph {
 				}
 			}
 		}
-//		IJ.log("");
 	}
 	
 	public void cleanupGraph(int minGraphNodes){

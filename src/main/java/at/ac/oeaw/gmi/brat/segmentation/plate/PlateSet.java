@@ -12,16 +12,18 @@ import ij.gui.Roi;
 import ij.io.Opener;
 import ij.process.ImageProcessor;
 
-import java.awt.*;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 public class PlateSet implements Runnable {
+    final private static Logger log=Logger.getLogger(PlateSet.class.getName());
     private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
     private final Preferences prefs_expert = prefs_simple.node("expert");
     private List<String> plateFilenames;
@@ -95,7 +97,7 @@ public class PlateSet implements Runnable {
                 if (detectedSeeds.size() > row) {
                     for (int col = 0; col < nCols; ++col, ++plantNr) {
                         if (detectedSeeds.get(row).get(col) != null) {
-                            IJ.log("plant " + row + "," + col + ": seed=" + seedCenters.get(row).get(col).toString());
+                            log.finer("plant " + row + "," + col + ": seed=" + seedCenters.get(row).get(col).toString());
                             Plant plant = new Plant(plantNr);
                             plant.setSeedRoi(detectedSeeds.get(row).get(col));
                             plant.setSeedCenter(seedCenters.get(row).get(col));
@@ -104,13 +106,7 @@ public class PlateSet implements Runnable {
                     }
                 }
             }
-            try {
-
-                FileUtils.moveFile(filePath, new File(moveDirectory, plateFilenames.get(0)).getAbsolutePath());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            FileUtils.moveFile(filePath, new File(moveDirectory, plateFilenames.get(0)).getAbsolutePath());
             plateFilenames.remove(0);
         }
 
@@ -152,19 +148,9 @@ public class PlateSet implements Runnable {
                 DataOutput.writeTraits(plants, fileNr, filenameBase);
                 DataOutput.writeSinglePlantDiagnostics(currentWorkIp, plants, fileNr, filenameBase);
                 DataOutput.writePlateDiags(currentWorkIp, plants, fileNr, filenameBase);
-                try {
-                    DataOutput.writeCoordinates(plateDetector.getRotation(), plateDetector.getScalefactor(), plateDetector.getReferencePt(), plateDetector.getPlateShape(),
-                            plants, fileNr, filenameBase);
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                try {
-                    FileUtils.moveFile(new File(baseDirectory,fileName).getAbsolutePath(),new File(moveDirectory,fileName).getAbsolutePath());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                DataOutput.writeCoordinates(plateDetector.getRotation(), plateDetector.getScalefactor(), plateDetector.getReferencePt(), plateDetector.getPlateShape(),
+                        plants, fileNr, filenameBase);
+                FileUtils.moveFile(new File(baseDirectory,fileName).getAbsolutePath(),new File(moveDirectory,fileName).getAbsolutePath());
             } catch (Exception e) {
                 IJ.log("unhandled exception!");
                 e.printStackTrace();

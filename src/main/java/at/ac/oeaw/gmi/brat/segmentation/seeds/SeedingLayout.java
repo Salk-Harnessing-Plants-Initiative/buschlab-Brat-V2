@@ -6,12 +6,14 @@ import java.awt.geom.RoundRectangle2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.math.KMeans1d;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
 
 public class SeedingLayout {
+	private final static Logger log=Logger.getLogger(SeedingLayout.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
@@ -264,13 +266,11 @@ public class SeedingLayout {
 			rowY/=lineCnt;
 			rowYPositions.add(rowY);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			System.out.println("ERROR: Could not find start point file: "+stPtFile.getAbsolutePath());
-			return;
+//			e.printStackTrace();
+			log.warning(String.format("Could not find start point file: %s",stPtFile.getAbsolutePath()));
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("ERROR: Could not read start point file: "+stPtFile.getAbsolutePath());
-			return;
+//			e.printStackTrace();
+			log.warning(String.format("ERROR: Could not read start point file: %s",stPtFile.getAbsolutePath()));
 		}
 		finally{
 			if(br!=null){

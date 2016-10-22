@@ -9,11 +9,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.logging.Logger;
 
 public class FileUtils {
-	public static void assertFolder(final String folder){
+	private final static Logger log=Logger.getLogger(FileUtils.class.getName());
+	public static void assertFolder(final String folder) throws IOException {
 		File f=new File(folder);
-		f.mkdirs();
+		if(!f.mkdirs()){
+				throw new IOException("Could not create directory '"+folder+"'.");
+		}
 	}
 	
 	public static void createDir(final String dirName) throws IOException{
@@ -25,12 +29,18 @@ public class FileUtils {
 		}
 	}
 
-	public static void moveFile(final String src,final String dest) throws IOException{
+	public static void moveFile(final String src,final String dest){
 		File srcFile=new File(src);
 		File destFile=new File(dest);
-		assertFolder(destFile.getParent());
-		if(!srcFile.renameTo(destFile)){
-			throw new IOException("file move: '"+src+"' to '"+dest+"' failed!!");
+		File destParentFile=destFile.getParentFile();
+		try {
+			assertFolder(destFile.getParent());
+			if(!srcFile.renameTo(destFile)){
+				throw new IOException(String.format("Could not rename file %s",src));
+			}
+		} catch (IOException e) {
+			log.warning(String.format("could not move file %s\n%s",src,e.getMessage()));
+//			e.printStackTrace();
 		}
 	}
 	
@@ -75,15 +85,4 @@ public class FileUtils {
 	    return filename.substring(0, extensionIndex);
 	}
 
-	public static void writeDiagnosticImage(final String diagPath,final ImageProcessor diagIp){
-		ImagePlus diagImage = new ImagePlus("Plant Diag",diagIp);
-		//diagImage.show();
-		if(diagPath!=null)
-		{
-			FileSaver filesaver = new FileSaver(diagImage);
-			//filesaver.saveAsTiff(diagPath);
-			filesaver.saveAsJpeg(diagPath);
-		}
-		diagImage.close();
-	}
 }

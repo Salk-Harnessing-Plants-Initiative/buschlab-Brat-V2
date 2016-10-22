@@ -43,7 +43,7 @@ public class BratDispatcher{
 	}
 
 	public void runHeadless(){
-		log.info("starting headless run.");
+		log.config("starting headless run.");
 		String strBaseDir=System.getenv("BRAT_BASEDIR");
 		log.config(String.format("ENV: BRAT_BASEDIR=%s",strBaseDir));
 		prefs_simple.put("baseDirectory",strBaseDir);
@@ -71,6 +71,7 @@ public class BratDispatcher{
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				log.config("starting gui run.");
 				readBaseDirectory();
 				if(filesets.size()==0){
 					log.warning("No images found. Terminating.");
@@ -89,7 +90,8 @@ public class BratDispatcher{
 					try {
 						Thread.sleep(5000);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						executorPool.shutdown();
+						break;
 					}
 				}
 				log.info("All threads terminated. Shutting down.");
@@ -148,6 +150,8 @@ public class BratDispatcher{
 		Pattern setPattern=Pattern.compile(prefs_expert.get("setIdentifier",null));
 		Pattern platePattern=Pattern.compile(prefs_expert.get("plateIdentifier",null));
 		assert filenames != null;
+		int minFilesetSize=Integer.MAX_VALUE;
+		int maxFilesetSize=Integer.MIN_VALUE;
 		for(String filename:filenames){
 			String trimmedName=FileUtils.removeExtension(filename);
 			String setID="";
@@ -180,7 +184,18 @@ public class BratDispatcher{
 			}
 			filesets.get(setID).add(filename);
 		}
-		log.info(String.format("Found %d image sets", filesets.size()));
+		for(SortedSet<String> set:filesets.values()){
+			int curSetSize=set.size();
+			if(minFilesetSize>curSetSize){
+				minFilesetSize=curSetSize;
+			}
+			if(maxFilesetSize<curSetSize){
+				maxFilesetSize=curSetSize;
+			}
+		}
+		log.info(String.format("Found %d image sets. (min/max set size = %d/%d)", filesets.size(),
+				minFilesetSize!=Integer.MAX_VALUE ? minFilesetSize : 0,
+				maxFilesetSize!=Integer.MIN_VALUE ? maxFilesetSize : 0));
 	}
 
 
