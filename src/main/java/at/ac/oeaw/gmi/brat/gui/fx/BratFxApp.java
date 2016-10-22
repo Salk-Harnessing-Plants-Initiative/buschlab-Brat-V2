@@ -109,10 +109,10 @@ public class BratFxApp extends Application {
 			}
 			double w=scene.getWidth();
 			double h=scene.getHeight();
-			double newSize=Math.min(w,h)/50;
+			double newSize=Math.min(w,h)/60;
 
 			if(newSize<20) {
-				fontSize.setValue(Math.min(w, h) / 50);
+				fontSize.setValue(newSize);
 			}
 		}
 	}

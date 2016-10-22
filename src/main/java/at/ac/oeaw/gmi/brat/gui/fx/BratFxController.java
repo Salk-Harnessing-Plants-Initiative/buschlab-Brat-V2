@@ -9,13 +9,19 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.event.ActionEvent;
+import javafx.stage.FileChooser;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.logging.*;
 import java.util.prefs.BackingStoreException;
@@ -70,6 +76,7 @@ public class BratFxController {
     @FXML private ColorPicker clrpckShootCM;
     @FXML private ColorPicker clrpckGeneral;
     @FXML private ChoiceBox<String> choiceboxLogLevel;
+    @FXML private Button btnDefaults;
 
     @FXML private LogBox logBox;
     @FXML private Accordion accordionMain;
@@ -118,7 +125,8 @@ public class BratFxController {
         clrpckShootCM.setValue(Color.web(prefs_expert.get("SHOOTCM_COLOR","#FF0000")));
         clrpckGeneral.setValue(Color.web(prefs_expert.get("GENERAL_COLOR","#FF0000")));
         choiceboxLogLevel.setItems(FXCollections.observableArrayList("OFF","SEVERE","WARNING","INFO","CONFIG","FINE","FINER","FINEST","ALL"));
-        choiceboxLogLevel.setValue(prefs_expert.get("logLevel","INFO"));
+        choiceboxLogLevel.setValue(prefs_expert.get("logLevel","OFF"));
+        btnDefaults.setOnAction(actionEvent -> setDefaults());
 
         lblNumThreads.textProperty().bind(Bindings.format("Threads: %2.0f", sliderNumThreads.valueProperty()));
         lblNumThreads.setStyle("-fx-font-family: monospace;");
@@ -148,6 +156,39 @@ public class BratFxController {
                 Platform.runLater(() -> t1.setCollapsible(false));
             }
         });
+
+        logBox.setOnExportAction(event -> {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Export Log To File");
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            File logfile = chooser.showSaveDialog(logBox.getScene().getWindow());
+            if(logfile!=null){
+                SimpleDateFormat timestampFormatter = new SimpleDateFormat("HH:mm:ss.SSS");
+                ObservableList<LogRecord> logItems = logBox.getLogItems();
+                BufferedWriter bw=null;
+                try{
+                    bw=new BufferedWriter(new FileWriter(logfile));
+                    for(LogRecord logRecord:logItems) {
+                        String context = String.format("%s %s.%s@%d",logRecord.getLevel(),logRecord.getSourceClassName(),logRecord.getSourceMethodName(),logRecord.getThreadID());
+                        String timestamp = timestampFormatter.format(logRecord.getMillis());
+                        String message = logRecord.getMessage();
+                        message.replace("\n", ";");
+                        bw.write(String.format("%s %s: %s\n",timestamp,context,message));
+                    }
+                } catch (IOException e) {
+                    log.severe(String.format("Error writing to file: %s.\n%s",logfile.getName(), ExceptionLog.StackTraceToString(e)));
+                } finally {
+                    if(bw != null){
+                        try {
+                            bw.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+        });
     }
 
     @FXML
@@ -173,6 +214,47 @@ public class BratFxController {
         accordionMain.setExpandedPane(paneLog);
         BratDispatcher dispatcher = new BratDispatcher();
         dispatcher.runFromGUI();
+    }
+
+    @FXML
+    protected void setDefaults(){
+        txtfldBaseDir.setText(System.getProperty("user.home"));
+        txtfldExtension.setText("tif");
+        chkboxFlipHorizontal.setSelected(true);
+        chkboxTimeSeries.setSelected(true);
+        chkboxDayZero.setSelected(true);
+        sliderNumThreads.setValue(1.0);
+
+        txtfldExpIdentifier.setText("^(.*?_)");
+        txtfldSetIdentifier.setText("set\\d+");
+        txtfldDayIdentifier.setText("day\\d+");
+        txtfldPlateIdentifier.setText("\\d{3}$");
+        txtfldImageResolution.setText("1200");
+        txtfldSeedMinSize.setText("0.10");
+        txtfldSeedMaxSize.setText("0.70");
+        txtfldShootMinThickness.setText("0.1");
+        txtfldShootWidthStep.setText("200");
+        txtfldShootHeightStep.setText("200");
+        txtfldPlantMinThickness.setText("0.1");
+        txtfldPlantMinHeight.setText("0.1");
+        txtfldPlantWidthStep.setText("200");
+        txtfldPlantHeightStep.setText("200");
+        txtfldPlantTreeMaxLevel.setText("10");
+        txtfldPlantTrackback.setText("10");
+        txtfldCircleDiameter.setText("10");
+        txtfldLabelSize.setText("30");
+        txtfldLabelFont.setText("sansserif-BOLD-30");
+        txtfldNumberSize.setText("150");
+        txtfldNumberFont.setText("sansserif-BOLD-150");
+        clrpckShootRoi.setValue(Color.web("#00FF00"));
+        clrpckRootRoi.setValue(Color.web("#1E90FF"));
+        clrpckSkeleton.setValue(Color.web("#808080"));
+        clrpckMainRoot.setValue(Color.web("#FF00FF"));
+        clrpckStartPoint.setValue(Color.web("#FFB366"));
+        clrpckEndPoint.setValue(Color.web("#1E90FF"));
+        clrpckShootCM.setValue(Color.web("#FF0000"));
+        clrpckGeneral.setValue(Color.web("#FF0000"));
+        choiceboxLogLevel.setValue("OFF");
     }
 
     private void updatePreferences(){
@@ -259,10 +341,6 @@ public class BratFxController {
             (int)(color.getGreen()*255),
             (int)(color.getBlue()*255));
     }
-//    @FXML
-//    protected void updateNumThreadsLabel(){
-//        lblNumThreads.setText(String.format("Thread Number: %2d", (int)sliderNumThreads.getValue()));
-//    }
 }
 
 //class LogLevelListener implements ChangeListener {
