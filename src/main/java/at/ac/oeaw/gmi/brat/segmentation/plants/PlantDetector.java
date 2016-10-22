@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.math.PlaneFit;
@@ -39,6 +40,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
 public class PlantDetector {
+	final private static Logger log=Logger.getLogger(PlantDetector.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
@@ -102,14 +104,14 @@ public class PlantDetector {
 						searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
 						searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
 						searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
-						IJ.log("prev shoot");
+						log.fine("shoot search area defined by previous shoot detection");
 					}
 					else{
 						Point2D seedCenter=plant.getSeedCenter();
 						if(seedCenter!=null){
 							double width=seedingLayout.getSearchWidth(row,col);
 							searchArea=new Rectangle((int)(seedCenter.getX()-width/2),(int)(seedCenter.getY()-width/2),(int)width,(int)width);
-							IJ.log("seed center");
+							log.fine("shoot search area defined by detected seed center");
 						}
 					}
 				}
@@ -120,7 +122,7 @@ public class PlantDetector {
 						if(seedCenter!=null){
 							double width=seedingLayout.getSearchWidth(row,col);
 							searchArea=new Rectangle((int)(seedCenter.getX()-width/2),(int)(seedCenter.getY()-width/2),(int)width,(int)width);
-							IJ.log("seed layout");
+							log.fine("shoot search area defined by seed layout");
 						}
 					}
 					else{
@@ -194,7 +196,7 @@ public class PlantDetector {
 				for(Roi roi:((ShapeRoi)shootRoi).getRois()){
 					maskIp.setRoi(roi);
 					double roiArea=maskIp.getStatistics().area;
-					IJ.log("roiArea: "+roiArea/totalShootArea);
+					log.finer("roiArea: "+roiArea/totalShootArea);
 					if(roiArea/totalShootArea<0.2){
 						maskIp.fill(roi);
 					}
@@ -261,14 +263,14 @@ public class PlantDetector {
 				Rectangle searchArea=null;
 
 				Roi prevPlant=plant.getRootRoi(timePt-1);
-				IJ.log("plant "+row+","+col);
+				log.fine("plant "+row+","+col);
 				if(prevPlant!=null) {
 					searchArea = prevPlant.getBounds();
-					IJ.log("prev plant");
+					log.fine("search area defined by previuos detection");
 				}
 				else {
 					searchArea = shootRoi.getBounds();
-					IJ.log("shoot roi");
+					log.fine("search area defined by shoot roi detection");
 				}
 				searchArea.x-=prefs_expert.getInt("plantWidthStep",200)/2;
 				searchArea.y-=prefs_expert.getInt("plantHeightStep",200)/2;
@@ -298,7 +300,7 @@ public class PlantDetector {
 					if(searchArea.y+searchArea.height>origIp.getHeight()){
 						searchArea.height-=searchArea.y+searchArea.height-origIp.getHeight();
 					}
-					IJ.log("searchArea1: "+searchArea.toString());
+					log.finer("searchArea1: "+searchArea.toString());
 					
 					diffIp=subtractPlane(origIp,searchArea);
 					ce.equalize(diffIp);
@@ -320,7 +322,7 @@ public class PlantDetector {
 							SkeletonNode curNode=new SkeletonNode(x+searchArea.x,y+searchArea.y);
 							if(trackSearchIp.get(x,y)==255 && skeletonIp.get(x,y)==255){
 								possibleTrackPts.add(new Point(x,y));
-								IJ.log("TP: "+x+","+y);
+								log.finest("TP: "+x+","+y);
 							}
 						}
 					}
@@ -335,9 +337,9 @@ public class PlantDetector {
 					trackGraph.create(skeletonIp,255,null,searchArea);
 
 					switch(possibleTrackPts.size()){
-					case 0:IJ.log("no track pt!!"); trackPt=null; break;
-					case 1:IJ.log("single track pt"); trackPt=possibleTrackPts.get(0); break;
-					default:IJ.log("search track pt (one of "+possibleTrackPts.size()+" points)");
+					case 0:log.fine("no track pt!!"); trackPt=null; break;
+					case 1:log.fine("single track pt"); trackPt=possibleTrackPts.get(0); break;
+					default:log.fine("search track pt (one of "+possibleTrackPts.size()+" points)");
 						double maxLength=0;
 						for(Point pt:possibleTrackPts){
 							List<SkeletonNode> lp=trackGraph.getLongestPathFromNode(new SkeletonNode(pt.x+searchArea.x,pt.y+searchArea.y));
@@ -376,7 +378,7 @@ public class PlantDetector {
 					Rectangle binRect=binaryRoi.getBounds();
 					
 					if(binRect.width>0.3*origIp.getWidth() || binRect.height>0.5*origIp.getHeight()){
-						IJ.log("roi size out of bounds! Giving up.");
+						log.fine("roi size out of bounds! Giving up.");
 						binaryRoi=null;
 						done=true;
 						continue;
@@ -401,7 +403,7 @@ public class PlantDetector {
 						done=false;
 					}
 					
-					IJ.log("searchArea2: "+searchArea.toString());
+					log.finer("searchArea2: "+searchArea.toString());
 					
 				}while(!done);
 				

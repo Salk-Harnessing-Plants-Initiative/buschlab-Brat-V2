@@ -1,5 +1,7 @@
 package at.ac.oeaw.gmi.brat.segmentation.plate;
 
+import at.ac.oeaw.gmi.brat.segmentation.plants.LotusSegmentation;
+import at.ac.oeaw.gmi.brat.utility.ExceptionLog;
 import ij.IJ;
 import ij.gui.Roi;
 import ij.io.Opener;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.segmentation.output.DataOutput;
@@ -22,6 +25,7 @@ import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
 
 public class PlateSet implements Runnable{
+	final private static Logger log=Logger.getLogger(PlateSet.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private List<String> plateFilenames;
@@ -96,22 +100,15 @@ public class PlateSet implements Runnable{
 					}
 				}
 			}
-			try {
-
-				FileUtils.moveFile(filePath,new File(moveDirectory,plateFilenames.get(0)).getAbsolutePath());
-			} 
-			catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			FileUtils.moveFile(filePath,new File(moveDirectory,plateFilenames.get(0)).getAbsolutePath());
 			plateFilenames.remove(0);
 		}
 
 		for(int fileNr=0;fileNr<plateFilenames.size();++fileNr){
-			try{
-				String fileName=plateFilenames.get(fileNr);
-				String filenameBase=FileUtils.removeExtension(fileName);
+			String fileName=plateFilenames.get(fileNr);
+			String filenameBase=FileUtils.removeExtension(fileName);
 
+			try{
 				IJ.log("working on file: '"+fileName+"'");
 				currentWorkIp =opener.openImage(baseDirectory,fileName).getProcessor();
 
@@ -135,25 +132,14 @@ public class PlateSet implements Runnable{
 				calcTraits(fileNr);
 				DataOutput.writeTraits(plants,fileNr,filenameBase);
 				DataOutput.writeSinglePlantDiagnostics(currentWorkIp,plants,fileNr,filenameBase);
-				DataOutput.writePlateDiags(currentWorkIp,plants,fileNr,filenameBase);
-				try {
-					DataOutput.writeCoordinates(plateDetector.getRotation(),plateDetector.getScalefactor(),plateDetector.getReferencePt(),plateDetector.getPlateShape(),
-												plants,fileNr,filenameBase);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				try {
+				DataOutput.writePlateDiags(currentWorkIp, plants, fileNr, filenameBase);
+				DataOutput.writeCoordinates(plateDetector.getRotation(), plateDetector.getScalefactor(), plateDetector.getReferencePt(), plateDetector.getPlateShape(),
+						plants, fileNr, filenameBase);
 					FileUtils.moveFile(new File(baseDirectory,fileName).getAbsolutePath(),new File(moveDirectory,fileName).getAbsolutePath());
-				}
-				catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 			catch(Exception e){
-				IJ.log("unhandled exception!");
-				e.printStackTrace();
+				log.severe(String.format("unhandled exception processing file %s\n%s!",fileName, ExceptionLog.StackTraceToString(e)));
+//				e.printStackTrace();
 			}
 		}
 	}
@@ -178,7 +164,7 @@ public class PlateSet implements Runnable{
 				if(plant.getRootRoi(time)==null){
 					continue;
 				}
-				IJ.log("Plant "+plant.getPlantID()+": creating topology");
+				log.info(String.format("Plant %s: calculating topology",plant.getPlantID()));
 				plant.createTopology(time);
 			}
 		}
@@ -190,10 +176,9 @@ public class PlateSet implements Runnable{
 				if(plant==null){
 					continue;
 				}
-				IJ.log("Plant "+plant.getPlantID()+": calculating traits");
+				log.info(String.format("Plant %s: calculating traits",plant.getPlantID()));
 				plant.calcTraits(time);
 			}
 		}
 	}
-	
 }

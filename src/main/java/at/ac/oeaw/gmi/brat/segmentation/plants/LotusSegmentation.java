@@ -25,13 +25,14 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import at.ac.oeaw.gmi.brat.math.Rgb2Hsb;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSpaceConverter;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSrm;
 
 public class LotusSegmentation {
-//	final static Logger log=Logger.getLogger(LotusSegmentation.class.getName());
+	final private static Logger log=Logger.getLogger(LotusSegmentation.class.getName());
 	final private ImageProcessor plantIp;
 	
 	private List<Roi> plantRois;
@@ -352,7 +353,7 @@ public class LotusSegmentation {
 			
 			if(shootCnt<200 || shootCnt>plantRoiArea*0.9){
 				roiIt.remove();
-				IJ.log("artefact plant detected. Removed Roi at: "+roiBounds.toString());
+				log.fine("artefact plant detected. Removed Roi at: "+roiBounds.toString());
 			}
 			else{
 				shootIp.setThreshold(255,255,ImageProcessor.NO_LUT_UPDATE);

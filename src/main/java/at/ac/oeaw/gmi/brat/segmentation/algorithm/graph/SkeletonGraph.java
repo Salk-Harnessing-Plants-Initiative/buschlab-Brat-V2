@@ -1,5 +1,6 @@
 package at.ac.oeaw.gmi.brat.segmentation.algorithm.graph;
 
+import at.ac.oeaw.gmi.brat.segmentation.dispatch.BratDispatcher;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -15,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.collections15.Transformer;
 
@@ -23,9 +25,10 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
 
 public class SkeletonGraph {
-	Graph<SkeletonNode,SkeletonLink> graph;
-	Map<Integer,SkeletonNode> nodeMap;
-	List<SkeletonNode> endNodes;
+	private final static Logger log=Logger.getLogger(SkeletonGraph.class.getName());
+	private Graph<SkeletonNode,SkeletonLink> graph;
+	private Map<Integer,SkeletonNode> nodeMap;
+	private List<SkeletonNode> endNodes;
 	
 //	List<SkeletonNode> path;
 	
@@ -58,7 +61,7 @@ public class SkeletonGraph {
 	
 	public void create(Roi roi){
 		Rectangle roiBounds=roi.getBounds();
-		IJ.log("roiBounds: "+roiBounds.toString());
+		log.fine(String.format("creating Roi. (roiBounds: %s)",roiBounds.toString()));
 		
 		ImageProcessor maskIp=roi.getMask();
 		

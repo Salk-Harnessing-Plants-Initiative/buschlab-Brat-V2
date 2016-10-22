@@ -9,10 +9,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
 import at.ac.oeaw.gmi.brat.segmentation.plants.Plant;
+import at.ac.oeaw.gmi.brat.utility.ExceptionLog;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
 
 import ij.gui.Roi;
@@ -22,6 +24,7 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 
 public class DataOutput {
+	private final static Logger log= Logger.getLogger(DataOutput.class.getName());
 	private static final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private static final Preferences prefs_expert = prefs_simple.node("expert");
 	private static final String outputDirectory = new File(prefs_simple.get("baseDirectory",null),"processed").getAbsolutePath();
@@ -82,7 +85,7 @@ public class DataOutput {
 		}
 	}
 
-	public static void writeTraits(List<List<Plant>> plants,Integer time,String filenamePart){
+	public static void writeTraits(List<List<Plant>> plants,Integer time,String filenamePart) {
 		FileUtils.assertFolder(outputDirectory);
 		String outputPath=new File(outputDirectory,String.format("Object_Measurements_%s.txt",filenamePart)).getAbsolutePath();
 		DecimalFormat f = new DecimalFormat("####0.000");
@@ -132,7 +135,7 @@ public class DataOutput {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			String stackTrace = sw.toString();
-//			IJ.log("Error writing file! "+stackTrace+" "+e.getMessage());				
+			log.severe(String.format("Error writing file!\n%s",ExceptionLog.StackTraceToString(e)));
 		}
 		finally{
 			if(output!=null){
@@ -273,7 +276,7 @@ public class DataOutput {
 		return dstIp;
 	}
 	
-	public static void writeCoordinates(double plateRotation,double scalefactor,Point2D refPt,Shape plateShape,List<List<Plant>> plants,Integer time,String filenamePart) throws IOException{
+	public static void writeCoordinates(double plateRotation,double scalefactor,Point2D refPt,Shape plateShape,List<List<Plant>> plants,Integer time,String filenamePart){
 		PlateCoordinates pc=new PlateCoordinates();
 		pc.rotation=plateRotation;
 		pc.scalefactor=scalefactor;
@@ -322,11 +325,21 @@ public class DataOutput {
 		}
 		
 		String outputPath=new File(outputDirectory,String.format("Object_Coordinates_%s.ser",filenamePart)).getAbsolutePath();
-		FileOutputStream fout=new FileOutputStream(outputPath);
-		ObjectOutputStream oos=new ObjectOutputStream(fout);
-		
-		oos.writeObject(pc);
-		oos.close();
+		ObjectOutputStream oos=null;
+		try{
+			oos=new ObjectOutputStream(new FileOutputStream(outputPath));
+			oos.writeObject(pc);
+		} catch (IOException e) {
+			log.warning(String.format("Could not write Coordinates.\n%s",e.getMessage()));
+//					e1.printStackTrace();
+		}
+		finally {
+			try {
+				oos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 //	private Font getFontFromConfigString(String strConfig){

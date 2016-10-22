@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.math.HistogramCorrelation;
@@ -19,6 +20,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 
 public class SeedDetector {
+	private final static Logger log=Logger.getLogger(SeedDetector.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
@@ -111,7 +113,7 @@ public class SeedDetector {
 			roiCenters.add(roiCenter);
 			separatedRois.add(roi);
 		}
-		IJ.log("separatedRois size: "+separatedRois.size());
+		log.finer("separatedRois size: "+separatedRois.size());
 		
 		List<List<Point2D>> seedPts=seedLayout.getPlateCenteredPositions(tmpIp.getWidth(),tmpIp.getHeight());
 		List<Double> seedRowY=seedLayout.getRowYPos();
@@ -171,7 +173,7 @@ public class SeedDetector {
 			}
 			iterations++;
 		}
-		IJ.log("iterations: "+iterations);
+		log.finer("iterations: "+iterations);
 		
 		
 		// get near rois for each seed pt
