@@ -113,7 +113,7 @@ public class BratFxController {
         clrpckRootRoi.setValue(Color.web(prefs_expert.get("ROOTROI_COLOR","#1E90FF")));
         clrpckSkeleton.setValue(Color.web(prefs_expert.get("SKELETON_COLOR","#808080")));
         clrpckMainRoot.setValue(Color.web(prefs_expert.get("MAINROOT_COLOR","#FF00FF")));
-        clrpckStartPoint.setValue(Color.web(prefs_expert.get("STARTPT_COLOR","#00416B")));
+        clrpckStartPoint.setValue(Color.web(prefs_expert.get("STARTPT_COLOR","#FFB366")));
         clrpckEndPoint.setValue(Color.web(prefs_expert.get("ENDPT_COLOR","#1E90FF")));
         clrpckShootCM.setValue(Color.web(prefs_expert.get("SHOOTCM_COLOR","#FF0000")));
         clrpckGeneral.setValue(Color.web(prefs_expert.get("GENERAL_COLOR","#FF0000")));

@@ -16,7 +16,7 @@ public class SeedingLayout {
 
 	private double scaleFactor;
 	private Shape plateShape;
-	
+
 	private int expectedRows;
 	private int expectedColumns;
 	private List<List<Point2D>> seedPositions;

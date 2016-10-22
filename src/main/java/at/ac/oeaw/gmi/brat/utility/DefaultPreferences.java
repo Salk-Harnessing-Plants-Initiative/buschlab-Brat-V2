@@ -1,7 +1,6 @@
 package at.ac.oeaw.gmi.brat.utility;
 
 import java.awt.*;
-import java.io.File;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -63,6 +62,7 @@ public class DefaultPreferences {
         prefs_expert.putInt("plantHeightStep",200);
         prefs_expert.putDouble("plantMinThickness",0.1);
         prefs_expert.putDouble("plantMinHeight",0.1);
+        prefs_expert.put("startpointmethod","seedPt");
 
         /*
          * diagnostics

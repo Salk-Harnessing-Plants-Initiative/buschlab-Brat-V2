@@ -71,7 +71,7 @@ public class BratDispatcher{
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				log.config("starting headless run.");
+				log.config("starting gui run.");
 				readBaseDirectory();
 				if(filesets.size()==0){
 					log.warning("No images found. Terminating.");

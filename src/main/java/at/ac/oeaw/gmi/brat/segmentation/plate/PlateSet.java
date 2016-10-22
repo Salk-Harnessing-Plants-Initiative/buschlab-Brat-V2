@@ -1,28 +1,24 @@
 package at.ac.oeaw.gmi.brat.segmentation.plate;
 
-import at.ac.oeaw.gmi.brat.segmentation.plants.LotusSegmentation;
-import at.ac.oeaw.gmi.brat.utility.ExceptionLog;
-import ij.IJ;
-import ij.gui.Roi;
-import ij.io.Opener;
-import ij.process.ImageProcessor;
-
-import java.awt.Shape;
-import java.awt.geom.Point2D;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import at.ac.oeaw.gmi.brat.segmentation.output.DataOutput;
 import at.ac.oeaw.gmi.brat.segmentation.plants.Plant;
 import at.ac.oeaw.gmi.brat.segmentation.plants.PlantDetector;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedDetector;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
+import at.ac.oeaw.gmi.brat.utility.ExceptionLog;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
+import ij.gui.Roi;
+import ij.io.Opener;
+import ij.process.ImageProcessor;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 public class PlateSet implements Runnable{
 	final private static Logger log=Logger.getLogger(PlateSet.class.getName());
@@ -93,7 +89,7 @@ public class PlateSet implements Runnable{
 			for(int row=0;row<nRows;++row){
 				for(int col=0;col<nCols;++col){
 					if(detectedSeeds.get(row).get(col)!=null){
-						IJ.log("plant "+row+","+col+": seed="+seedCenters.get(row).get(col).toString());
+						log.fine("plant "+row+","+col+": seed="+seedCenters.get(row).get(col).toString());
 						Plant plant=plants.get(row).get(col);
 						plant.setSeedRoi(detectedSeeds.get(row).get(col));
 						plant.setSeedCenter(seedCenters.get(row).get(col));
@@ -109,18 +105,18 @@ public class PlateSet implements Runnable{
 			String filenameBase=FileUtils.removeExtension(fileName);
 
 			try{
-				IJ.log("working on file: '"+fileName+"'");
+//				IJ.log("working on file: '"+fileName+"'");
 				currentWorkIp =opener.openImage(baseDirectory,fileName).getProcessor();
 
 				if(prefs_simple.getBoolean("flipHorizontal",true)){
 					currentWorkIp.flipHorizontal();
 				}
 
-				IJ.log(currentWorkIp.toString());
+//				IJ.log(currentWorkIp.toString());
 				PlateDetector plateDetector=new PlateDetector(currentWorkIp,1.0,plateShape);
 				plateDetector.detectInsideArea();
 				currentWorkIp =plateDetector.getCorrectedIp();
-				IJ.log(currentWorkIp.toString());
+//				IJ.log(currentWorkIp.toString());
 
 				//TODO check if corrected ip is valid
 

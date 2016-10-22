@@ -1,28 +1,11 @@
 package at.ac.oeaw.gmi.brat.segmentation.plants;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import at.ac.oeaw.gmi.brat.math.PlaneFit;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.CPoint;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.*;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSpaceConverter;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.EdgeFilter;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.PixelUtils;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonGraph;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
@@ -31,13 +14,14 @@ import ij.gui.WaitForUserDialog;
 import ij.plugin.ContrastEnhancer;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.process.AutoThresholder;
-import ij.process.BinaryProcessor;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.FloodFiller;
-import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
+import ij.process.*;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 public class PlantDetector {
 	final private static Logger log=Logger.getLogger(PlantDetector.class.getName());

@@ -1,35 +1,25 @@
 package at.ac.oeaw.gmi.brat.segmentation.plate;
 
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.EdgeFilter;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT.HoughLine;
-
-import at.ac.oeaw.gmi.brat.segmentation.plants.LotusSegmentation;
-import ij.IJ;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.gui.Wand;
 import ij.plugin.ContrastEnhancer;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 public class PlateDetector {
 	final private static Logger log=Logger.getLogger(PlateDetector.class.getName());
@@ -49,7 +39,7 @@ public class PlateDetector {
 	private double rotAngle;
 	private Polygon convexOutline;
 	private Point2D referencePt;
-	
+
 
 	public PlateDetector(ImageProcessor origIp,double scaleFactor,Shape plateShape){
 		this.scaleFactor=scaleFactor;

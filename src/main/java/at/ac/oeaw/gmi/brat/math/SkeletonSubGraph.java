@@ -1,35 +1,27 @@
 package at.ac.oeaw.gmi.brat.math;
 
-import ij.IJ;
-import ij.process.ImageProcessor;
-
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import org.apache.commons.collections15.Transformer;
-
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
+import ij.process.ImageProcessor;
+import org.apache.commons.collections15.Transformer;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 
 public class SkeletonSubGraph {
-	List<Point> skeletonPts;
-	List<MyNode> skeletonEndNodes;
-	Rectangle idOffset;
-	Rectangle skeletonBounds;
+	private List<Point> skeletonPts;
+	private List<MyNode> skeletonEndNodes;
+	private Rectangle idOffset;
+	private Rectangle skeletonBounds;
 	
-	Graph<MyNode,MyLink> graph;
-	Map<Integer,MyNode> nodeMap;
-	static int edgeCount=0;
+	private Graph<MyNode,MyLink> graph;
+	private Map<Integer,MyNode> nodeMap;
+	private static int edgeCount=0;
 	
-	List<Point> longestShortestPath;
+	private List<Point> longestShortestPath;
 	
 	public SkeletonSubGraph(List<Point> skeletonPts){
 		this.skeletonPts=skeletonPts;
@@ -157,14 +149,14 @@ public class SkeletonSubGraph {
 	}
 	
 	public void cleanupGraph(int minGraphNodes){
-		for(int i=0;i<skeletonEndNodes.size();++i){
-			List<MyNode> graphNodes=getConnectedGraph(skeletonEndNodes.get(i));
+		for (MyNode skeletonEndNode : skeletonEndNodes) {
+			List<MyNode> graphNodes = getConnectedGraph(skeletonEndNode);
 
-			if(graphNodes.size()<minGraphNodes){
-				for(MyNode gNode:graphNodes){
-					Collection<MyLink> nodeLinks=graph.getIncidentEdges(gNode);
-					if(nodeLinks!=null){
-						for(MyLink link:nodeLinks){
+			if (graphNodes.size() < minGraphNodes) {
+				for (MyNode gNode : graphNodes) {
+					Collection<MyLink> nodeLinks = graph.getIncidentEdges(gNode);
+					if (nodeLinks != null) {
+						for (MyLink link : nodeLinks) {
 							graph.removeEdge(link);
 						}
 					}
@@ -188,10 +180,10 @@ public class SkeletonSubGraph {
             }
         };
         DijkstraShortestPath<MyNode,MyLink> alg = new DijkstraShortestPath<MyNode,MyLink>(graph,wtTransformer);
-		for(int i=0;i<skeletonEndNodes.size();++i){
-			Double dist=(Double)alg.getDistance(ptNode,skeletonEndNodes.get(i));
-			if(dist!=null){
-				correspondingEndNodes.add(skeletonEndNodes.get(i));
+		for (MyNode skeletonEndNode : skeletonEndNodes) {
+			Double dist = (Double) alg.getDistance(ptNode, skeletonEndNode);
+			if (dist != null) {
+				correspondingEndNodes.add(skeletonEndNode);
 			}
 		}
 
