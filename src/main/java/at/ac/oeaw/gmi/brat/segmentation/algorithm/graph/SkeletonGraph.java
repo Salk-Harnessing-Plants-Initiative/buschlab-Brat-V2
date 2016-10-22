@@ -1,27 +1,19 @@
 package at.ac.oeaw.gmi.brat.segmentation.algorithm.graph;
 
-import ij.IJ;
-import ij.ImagePlus;
+import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.Graph;
 import ij.gui.Roi;
 import ij.plugin.filter.EDM;
 import ij.process.BinaryProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
 import org.apache.commons.collections15.Transformer;
 
-import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.Graph;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class SkeletonGraph {
 	private final static Logger log=Logger.getLogger(SkeletonGraph.class.getName());

@@ -6,16 +6,15 @@ import at.ac.oeaw.gmi.brat.segmentation.plants.Plant;
 import at.ac.oeaw.gmi.brat.segmentation.plants.ng.PlantDetectorNG;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedDetector;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
+import at.ac.oeaw.gmi.brat.utility.ExceptionLog;
 import at.ac.oeaw.gmi.brat.utility.FileUtils;
-import ij.IJ;
 import ij.gui.Roi;
 import ij.io.Opener;
 import ij.process.ImageProcessor;
 
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -111,11 +110,11 @@ public class PlateSet implements Runnable {
         }
 
         for (int fileNr = 0; fileNr < plateFilenames.size(); ++fileNr) {
-            try {
-                String fileName = plateFilenames.get(fileNr);
-                String filenameBase = FileUtils.removeExtension(fileName);
+            String fileName = plateFilenames.get(fileNr);
+            String filenameBase = FileUtils.removeExtension(fileName);
 
-                IJ.log("working on file: '" + fileName + "'");
+            try {
+//                IJ.log("working on file: '" + fileName + "'");
                 currentWorkIp = opener.openImage(baseDirectory, fileName).getProcessor();
                 seedingLayout.readStartPoints(baseDirectory, fileName);
 
@@ -124,11 +123,11 @@ public class PlateSet implements Runnable {
                 }
 
 
-                IJ.log(currentWorkIp.toString());
+//                IJ.log(currentWorkIp.toString());
                 PlateDetector plateDetector = new PlateDetector(currentWorkIp, 1.0, plateShape);
                 plateDetector.detectInsideArea();
                 currentWorkIp = plateDetector.getCorrectedIp();
-                IJ.log(currentWorkIp.toString());
+//                IJ.log(currentWorkIp.toString());
                 //TODO check if corrected ip is valid
 
 
@@ -150,10 +149,10 @@ public class PlateSet implements Runnable {
                 DataOutput.writePlateDiags(currentWorkIp, plants, fileNr, filenameBase);
                 DataOutput.writeCoordinates(plateDetector.getRotation(), plateDetector.getScalefactor(), plateDetector.getReferencePt(), plateDetector.getPlateShape(),
                         plants, fileNr, filenameBase);
-                FileUtils.moveFile(new File(baseDirectory,fileName).getAbsolutePath(),new File(moveDirectory,fileName).getAbsolutePath());
+                FileUtils.moveFile(new File(baseDirectory, fileName).getAbsolutePath(), new File(moveDirectory, fileName).getAbsolutePath());
             } catch (Exception e) {
-                IJ.log("unhandled exception!");
-                e.printStackTrace();
+                log.severe(String.format("unhandled exception processing file %s\n%s!", fileName, ExceptionLog.StackTraceToString(e)));
+//                e.printStackTrace();
             }
         }
     }
@@ -180,7 +179,7 @@ public class PlateSet implements Runnable {
                 if (plant.getRootRoi(time) == null) {
                     continue;
                 }
-                IJ.log("Plant " + plant.getPlantID() + ": creating topology");
+                log.info(String.format("Plant %s: calculating topology",plant.getPlantID()));
 
                 SkeletonNode stNodeGuess = null;
                 if (prefs_expert.get("startpointmethod","seedPt").equals("seedPt")) {
@@ -205,7 +204,7 @@ public class PlateSet implements Runnable {
                 if (plant == null) {
                     continue;
                 }
-                IJ.log("Plant " + plant.getPlantID() + ": calculating traits");
+                log.info(String.format("Plant %s: calculating traits",plant.getPlantID()));
                 plant.calcTraits(time);
             }
         }

@@ -12,7 +12,6 @@ import at.ac.oeaw.gmi.brat.segmentation.algorithm.graph.SkeletonNode;
 import at.ac.oeaw.gmi.brat.segmentation.plants.Plant;
 import at.ac.oeaw.gmi.brat.segmentation.seeds.SeedingLayout;
 
-import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -30,9 +29,11 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 public class PlantDetectorNG {
+	final private static Logger log= Logger.getLogger(PlantDetectorNG.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
@@ -487,14 +488,14 @@ public class PlantDetectorNG {
 				Rectangle searchArea=null;
 
 				Roi prevPlant=plant.getRootRoi(timePt-1);
-				IJ.log("plant "+row+","+col);
+				log.fine("plant "+row+","+col);
 				if(prevPlant!=null){
 					searchArea=prevPlant.getBounds();
 					searchArea.x-=prefs_expert.getInt("shootWidthStep",200)/2;
 					searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
 					searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
 					searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
-					IJ.log("prev plant");
+					log.fine("search area defined by previuos detection");
 				}
 				else{
 					searchArea=shootRoi.getBounds();
@@ -502,7 +503,7 @@ public class PlantDetectorNG {
 					searchArea.y-=prefs_expert.getInt("shootHeightStep",200)/2;
 					searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
 					searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
-					IJ.log("shoot roi");
+					log.fine("search area defined by shoot roi detection");
 				}
 
 				
@@ -529,7 +530,7 @@ public class PlantDetectorNG {
 					if(searchArea.y+searchArea.height>origIp.getHeight()){
 						searchArea.height-=searchArea.y+searchArea.height-origIp.getHeight();
 					}
-					IJ.log("searchArea1: "+searchArea.toString());
+					log.finer("searchArea1: "+searchArea.toString());
 					
 					diffIp=subtractPlane(origIp,searchArea);
 					ce.equalize(diffIp);
@@ -551,7 +552,7 @@ public class PlantDetectorNG {
 							SkeletonNode curNode=new SkeletonNode(x+searchArea.x,y+searchArea.y);
 							if(trackSearchIp.get(x,y)==255 && skeletonIp.get(x,y)==255){
 								possibleTrackPts.add(new Point(x,y));
-								IJ.log("TP: "+x+","+y);
+								log.finest("TP: "+x+","+y);
 							}
 						}
 					}
@@ -565,21 +566,28 @@ public class PlantDetectorNG {
 					SkeletonGraph trackGraph=new SkeletonGraph();
 					trackGraph.create(skeletonIp,255,null,searchArea);
 
-					switch(possibleTrackPts.size()){
-					case 0:IJ.log("no track pt!!"); trackPt=null; break;
-					case 1:IJ.log("single track pt"); trackPt=possibleTrackPts.get(0); break;
-					default:IJ.log("search track pt (one of "+possibleTrackPts.size()+" points)");
-						double maxLength=0;
-						for(Point pt:possibleTrackPts){
-							List<SkeletonNode> lp=trackGraph.getLongestPathFromNode(new SkeletonNode(pt.x+searchArea.x,pt.y+searchArea.y));
-							if(lp==null || lp.size()<2)
-								continue;
-							Double lpLen=trackGraph.getPathLength(lp.get(0),lp.get(lp.size()-1));
-							if(lpLen>maxLength){
-								maxLength=lpLen;
-								trackPt=pt;
+					switch (possibleTrackPts.size()) {
+						case 0:
+							log.fine("no track pt!!");
+							trackPt = null;
+							break;
+						case 1:
+							log.fine("single track pt");
+							trackPt = possibleTrackPts.get(0);
+							break;
+						default:
+							log.fine("search track pt (one of " + possibleTrackPts.size() + " points)");
+							double maxLength = 0;
+							for (Point pt : possibleTrackPts) {
+								List<SkeletonNode> lp = trackGraph.getLongestPathFromNode(new SkeletonNode(pt.x + searchArea.x, pt.y + searchArea.y));
+								if (lp == null || lp.size() < 2)
+									continue;
+								Double lpLen = trackGraph.getPathLength(lp.get(0), lp.get(lp.size() - 1));
+								if (lpLen > maxLength) {
+									maxLength = lpLen;
+									trackPt = pt;
+								}
 							}
-						}
 					}
 
 					if(trackPt==null){
@@ -607,7 +615,7 @@ public class PlantDetectorNG {
 					Rectangle binRect=binaryRoi.getBounds();
 					
 					if(binRect.width>0.3*origIp.getWidth() || binRect.height>0.5*origIp.getHeight()){
-						IJ.log("roi size out of bounds! Giving up.");
+						log.fine("roi size out of bounds! Giving up.");
 						binaryRoi=null;
 						done=true;
 						continue;
@@ -632,7 +640,7 @@ public class PlantDetectorNG {
 						done=false;
 					}
 					
-					IJ.log("searchArea2: "+searchArea.toString());
+					log.finer("searchArea2: "+searchArea.toString());
 					
 				}while(!done);
 				

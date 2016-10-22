@@ -1,23 +1,20 @@
 package at.ac.oeaw.gmi.brat.segmentation.seeds;
 
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.prefs.Preferences;
-
 import at.ac.oeaw.gmi.brat.math.HistogramCorrelation;
-
-import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 public class SeedDetector {
 	private final static Logger log=Logger.getLogger(SeedDetector.class.getName());

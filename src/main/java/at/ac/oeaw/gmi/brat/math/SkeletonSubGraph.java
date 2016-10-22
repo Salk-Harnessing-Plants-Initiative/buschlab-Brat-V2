@@ -1,35 +1,27 @@
 package at.ac.oeaw.gmi.brat.math;
 
-import ij.IJ;
-import ij.process.ImageProcessor;
-
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import org.apache.commons.collections15.Transformer;
-
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.Graph;
+import ij.process.ImageProcessor;
+import org.apache.commons.collections15.Transformer;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 
 public class SkeletonSubGraph {
-	List<Point> skeletonPts;
-	List<MyNode> skeletonEndNodes;
-	Rectangle idOffset;
-	Rectangle skeletonBounds;
+	private List<Point> skeletonPts;
+	private List<MyNode> skeletonEndNodes;
+	private Rectangle idOffset;
+	private Rectangle skeletonBounds;
+
+	private Graph<MyNode,MyLink> graph;
+	private Map<Integer,MyNode> nodeMap;
+	private static int edgeCount=0;
 	
-	Graph<MyNode,MyLink> graph;
-	Map<Integer,MyNode> nodeMap;
-	static int edgeCount=0;
-	
-	List<Point> longestShortestPath;
+	private List<Point> longestShortestPath;
 	
 	public SkeletonSubGraph(List<Point> skeletonPts){
 		this.skeletonPts=skeletonPts;

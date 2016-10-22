@@ -1,6 +1,8 @@
 package at.ac.oeaw.gmi.brat.segmentation.plants;
 
-import ij.IJ;
+import at.ac.oeaw.gmi.brat.math.Rgb2Hsb;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSpaceConverter;
+import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSrm;
 import ij.ImageStack;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
@@ -9,27 +11,13 @@ import ij.gui.Wand;
 import ij.plugin.ContrastEnhancer;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.process.Blitter;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
+import ij.process.*;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import at.ac.oeaw.gmi.brat.math.Rgb2Hsb;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSpaceConverter;
-import at.ac.oeaw.gmi.brat.segmentation.algorithm.ColorSrm;
 
 public class LotusSegmentation {
 	final private static Logger log=Logger.getLogger(LotusSegmentation.class.getName());

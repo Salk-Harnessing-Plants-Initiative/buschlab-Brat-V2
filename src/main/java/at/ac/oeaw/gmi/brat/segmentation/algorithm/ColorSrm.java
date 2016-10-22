@@ -3,26 +3,10 @@ package at.ac.oeaw.gmi.brat.segmentation.algorithm;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-
-import ij.gui.GenericDialog;
-import ij.gui.Roi;
-
-import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 
-import ij.plugin.filter.PlugInFilter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /*
  * The Statistical Region Merging algorithm is described in
