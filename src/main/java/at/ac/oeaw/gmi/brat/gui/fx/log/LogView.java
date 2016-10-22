@@ -39,9 +39,9 @@ class LogView extends ListView<LogRecord> {
     private final ObjectProperty<String> filterLevel   = new SimpleObjectProperty<>(null);
     private final BooleanProperty       tail          = new SimpleBooleanProperty(false);
     private final BooleanProperty       paused        = new SimpleBooleanProperty(false);
-    private final DoubleProperty refreshRate   = new SimpleDoubleProperty(60);
+//    private final DoubleProperty refreshRate   = new SimpleDoubleProperty(60);
 
-    private final ObservableList<LogRecord> logItems = FXCollections.observableArrayList();
+    protected final ObservableList<LogRecord> logItems = FXCollections.observableArrayList();
     private LogQueue logQueue;
     private Timeline logTransfer;
 
@@ -61,16 +61,16 @@ class LogView extends ListView<LogRecord> {
         return paused;
     }
 
-    DoubleProperty refreshRateProperty() {
-        return refreshRate;
-    }
+//    DoubleProperty refreshRateProperty() {
+//        return refreshRate;
+//    }
 
     LogView() {
         getStyleClass().add("log-view");
 
         logTransfer = new Timeline();
         logTransfer.setCycleCount(Timeline.INDEFINITE);
-        logTransfer.rateProperty().bind(refreshRateProperty());
+//        logTransfer.rateProperty().bind(refreshRateProperty());
 
         this.pausedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue && logTransfer.getStatus() == Animation.Status.RUNNING) {
