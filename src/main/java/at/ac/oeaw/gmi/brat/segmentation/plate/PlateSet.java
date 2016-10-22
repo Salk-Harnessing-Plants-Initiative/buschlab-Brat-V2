@@ -135,7 +135,7 @@ public class PlateSet implements Runnable{
 				DataOutput.writePlateDiags(currentWorkIp, plants, fileNr, filenameBase);
 				DataOutput.writeCoordinates(plateDetector.getRotation(), plateDetector.getScalefactor(), plateDetector.getReferencePt(), plateDetector.getPlateShape(),
 						plants, fileNr, filenameBase);
-					FileUtils.moveFile(new File(baseDirectory,fileName).getAbsolutePath(),new File(moveDirectory,fileName).getAbsolutePath());
+				FileUtils.moveFile(new File(baseDirectory,fileName).getAbsolutePath(),new File(moveDirectory,fileName).getAbsolutePath());
 			}
 			catch(Exception e){
 				log.severe(String.format("unhandled exception processing file %s\n%s!",fileName, ExceptionLog.StackTraceToString(e)));

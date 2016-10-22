@@ -85,15 +85,4 @@ public class FileUtils {
 	    return filename.substring(0, extensionIndex);
 	}
 
-	public static void writeDiagnosticImage(final String diagPath,final ImageProcessor diagIp){
-		ImagePlus diagImage = new ImagePlus("Plant Diag",diagIp);
-		//diagImage.show();
-		if(diagPath!=null)
-		{
-			FileSaver filesaver = new FileSaver(diagImage);
-			//filesaver.saveAsTiff(diagPath);
-			filesaver.saveAsJpeg(diagPath);
-		}
-		diagImage.close();
-	}
 }
