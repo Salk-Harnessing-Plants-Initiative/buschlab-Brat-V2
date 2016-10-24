@@ -15,6 +15,9 @@ public class FileUtils {
 	private final static Logger log=Logger.getLogger(FileUtils.class.getName());
 	public static void assertFolder(final String folder) throws IOException {
 		File f=new File(folder);
+		if(f.isDirectory()){
+			return;
+		}
 		if(!f.mkdirs()){
 				throw new IOException("Could not create directory '"+folder+"'.");
 		}
