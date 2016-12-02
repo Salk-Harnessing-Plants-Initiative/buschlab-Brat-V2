@@ -32,6 +32,11 @@ public class DataOutput {
 	private static final String outputDirectory = new File(prefs_simple.get("baseDirectory",null),"processed").getAbsolutePath();
 
 	public static void writePlateDiags(ImageProcessor srcIp,List<List<Plant>> plants,int time,String filenamePart){
+		try {
+			FileUtils.assertFolder(outputDirectory);
+		} catch (IOException e) {
+			log.severe(String.format("Error creating output directory: %s! \n%s",outputDirectory, ExceptionLog.StackTraceToString(e)));
+		}
 		ImageProcessor diagIp=srcIp.duplicate();
 		for(List<Plant> plantsRow:plants){
 			for(Plant plant:plantsRow){
@@ -82,12 +87,17 @@ public class DataOutput {
 					}
 				}
 			}
-			String savePath=new File(outputDirectory,String.format("Object_Diagnostics_%s.jpg",filenamePart)).getAbsolutePath();
-			writeDiagnosticImage(savePath,diagIp);
 		}
+		String savePath=new File(outputDirectory,String.format("Object_Diagnostics_%s.jpg",filenamePart)).getAbsolutePath();
+		writeDiagnosticImage(savePath,diagIp);
 	}
 
 	public static void writeTraits(List<List<Plant>> plants,Integer time,String filenamePart) {
+		try {
+			FileUtils.assertFolder(outputDirectory);
+		} catch (IOException e) {
+			log.severe(String.format("Error creating output directory: %s! \n%s",outputDirectory, ExceptionLog.StackTraceToString(e)));
+		}
 		String outputPath=new File(outputDirectory,String.format("Object_Measurements_%s.txt",filenamePart)).getAbsolutePath();
 		DecimalFormat f = new DecimalFormat("####0.000");
 
@@ -125,6 +135,7 @@ public class DataOutput {
 						}
 					}
 					sb.append(newline);
+					log.info(String.format("Plant %s: writing traits",plant.getPlantID()));
 					output.write(sb.toString());
 					output.flush();
 				}
@@ -276,6 +287,11 @@ public class DataOutput {
 	}
 	
 	public static void writeCoordinates(double plateRotation,double scalefactor,Point2D refPt,Shape plateShape,List<List<Plant>> plants,Integer time,String filenamePart){
+		try {
+			FileUtils.assertFolder(outputDirectory);
+		} catch (IOException e) {
+			log.severe(String.format("Error creating output directory: %s! \n%s",outputDirectory, ExceptionLog.StackTraceToString(e)));
+		}
 		PlateCoordinates pc=new PlateCoordinates();
 		pc.rotation=plateRotation;
 		pc.scalefactor=scalefactor;
@@ -320,6 +336,7 @@ public class DataOutput {
 				pc.plantCoordinates.get(plantID).add(shootPixels);
 				pc.plantCoordinates.get(plantID).add(rootPixels);
 				pc.plantCoordinates.get(plantID).add(plant.getRootMainPathPoints(time));
+				log.info(String.format("writing coordinates plant %s", plantID));
 			}
 		}
 		
@@ -346,6 +363,7 @@ public class DataOutput {
 		//diagImage.show();
 		if(diagPath!=null)
 		try {
+			log.info(String.format("creating diagnostic image: %s",diagPath));
 			FileUtils.assertFolder(new File(diagPath).getParent());
 			FileSaver filesaver = new FileSaver(diagImage);
 			//filesaver.saveAsTiff(diagPath);
