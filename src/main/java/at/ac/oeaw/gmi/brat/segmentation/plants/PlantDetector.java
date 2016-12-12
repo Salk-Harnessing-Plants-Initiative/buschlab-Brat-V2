@@ -167,10 +167,17 @@ public class PlantDetector {
 						}
 					}
 				}
-				
-				maskIp.setThreshold(1,255,ImageProcessor.NO_LUT_UPDATE);
-				ThresholdToSelection ts1=new ThresholdToSelection();
-				Roi shootRoi=new ShapeRoi(ts1.convert(maskIp));
+
+				Roi shootRoi = null;
+				ThresholdToSelection ts1 = new ThresholdToSelection();
+				try {
+					maskIp.setThreshold(1, 255, ImageProcessor.NO_LUT_UPDATE);
+					shootRoi = new ShapeRoi(ts1.convert(maskIp));
+				}
+				catch(NullPointerException e){
+					log.fine("no shoot detected.");
+				}
+
 				if(shootRoi==null || shootRoi.getBounds().width==0 || shootRoi.getBounds().height==0){
 					continue;
 				}

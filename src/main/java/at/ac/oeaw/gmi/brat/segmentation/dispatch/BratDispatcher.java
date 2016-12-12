@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 
 
 public class BratDispatcher{
+	private final static String version = "2.0.1";
 	private final static ClassLoader classloader = BratDispatcher.class.getClassLoader();
 	private final static Logger log=Logger.getLogger(BratDispatcher.class.getName());
 	private final static Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
@@ -137,6 +138,7 @@ public class BratDispatcher{
 			log.addHandler(guiLogHandler);
 		}
 		log.info("Brat Logging started.");
+		log.info(String.format("Brat version %s", version));
 	}
 
 	private void readBaseDirectory(){
