@@ -30,7 +30,7 @@ public class Brat_V2 implements PlugIn {
         }
 
         BratDispatcher dispatcher = new BratDispatcher();
-        if (isHeadless() || Objects.equals("BRAT_RUNHEADLESS", "true")) {
+        if (isHeadless() || Objects.equals(System.getenv("BRAT_RUNHEADLESS").toLowerCase(), "true")) {
             dispatcher.initLogger(null);
             dispatcher.runHeadless();
         } else {

@@ -129,6 +129,7 @@ public class BratDispatcher{
 		} else {
 			h.setFormatter(new DebugLogFormatter());
 		}
+		h.setLevel(Level.ALL);
 		log.addHandler(h);
 
 		if (logQueue != null) {
