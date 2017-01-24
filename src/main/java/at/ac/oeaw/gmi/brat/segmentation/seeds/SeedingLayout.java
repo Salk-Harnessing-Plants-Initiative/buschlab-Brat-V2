@@ -256,12 +256,13 @@ public class SeedingLayout {
 			int lineCnt=0;
 			double rowY=0;
 			while((line=br.readLine())!=null){
-				String[] cols=line.split("\t");
+				String[] cols=line.split("\\s+");
 				Point2D.Double pt=new Point2D.Double(Double.parseDouble(cols[1]),Double.parseDouble(cols[2]));
 				newPositions.add(pt);
 				rowY+=pt.getY();
 				lineCnt++;
 			}
+
 			seedPositions.add(newPositions);
 			rowY/=lineCnt;
 			rowYPositions.add(rowY);
