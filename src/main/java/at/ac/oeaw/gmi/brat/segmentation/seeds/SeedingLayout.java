@@ -255,13 +255,32 @@ public class SeedingLayout {
 			String line=null;
 			int lineCnt=0;
 			double rowY=0;
-			while((line=br.readLine())!=null){
-				String[] cols=line.split("\t");
+			if((line = br.readLine()).equals("StartPointsV1.2")){
+				lineCnt++;
+				log.config(String.format("Found start points file version %s", line));
+				String[] parts = br.readLine().split("\\s+");
+				lineCnt++;
+				String[] layoutstr = parts[1].split("x");
+				log.config(String.format("Layout: %s rows, %s columns", layoutstr[0], layoutstr[1]));
+				this.expectedRows = Integer.parseInt(layoutstr[0]);
+				this.expectedColumns = Integer.parseInt(layoutstr[1]);
+			}
+			else{
+				String[] cols=line.split("\\s+");
 				Point2D.Double pt=new Point2D.Double(Double.parseDouble(cols[1]),Double.parseDouble(cols[2]));
 				newPositions.add(pt);
 				rowY+=pt.getY();
 				lineCnt++;
 			}
+
+			while((line=br.readLine())!=null){
+				String[] cols=line.split("\\s+");
+				Point2D.Double pt=new Point2D.Double(Double.parseDouble(cols[1]),Double.parseDouble(cols[2]));
+				newPositions.add(pt);
+				rowY+=pt.getY();
+				lineCnt++;
+			}
+
 			seedPositions.add(newPositions);
 			rowY/=lineCnt;
 			rowYPositions.add(rowY);
