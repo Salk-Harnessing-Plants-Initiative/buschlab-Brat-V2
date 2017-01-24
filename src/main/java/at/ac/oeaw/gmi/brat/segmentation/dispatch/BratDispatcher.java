@@ -56,6 +56,10 @@ public class BratDispatcher{
 		log.config(String.format("ENV: BRAT_FILESETNR=%s",strFilesetNr));
 		int filesetNr = Integer.parseInt(System.getenv("BRAT_FILESETNR"));
 
+		String strHaveDayZero=System.getenv("BRAT_HAVEDAYZERO");
+		log.config(String.format("ENV: BRAT_HAVEDAYZERO=%s",strHaveDayZero));
+		prefs_simple.put("haveDayZeroImage",strHaveDayZero);
+
 		readBaseDirectory();
 		SortedSet<String> workSet = new ArrayList<SortedSet<String>>(filesets.values()).get(filesetNr);
 		for(String f:workSet){
