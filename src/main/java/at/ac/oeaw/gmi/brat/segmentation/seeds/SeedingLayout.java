@@ -118,6 +118,31 @@ public class SeedingLayout {
 		rowYPositions.add(1020.0);
 		
 	}
+
+	public void setMedicagoLayout(){
+		this.scaleFactor=0.5;
+		this.expectedRows=1;
+		this.expectedColumns=6;
+
+		seedPositions=new ArrayList<List<Point2D>>();
+		rowYPositions=new ArrayList<Double>();
+		List<Point2D> tmpPositions=new ArrayList<Point2D>();
+		tmpPositions.add(new Point2D.Double(336,1020));
+		tmpPositions.add(new Point2D.Double(930,1020));
+		tmpPositions.add(new Point2D.Double(1632,1020));
+		tmpPositions.add(new Point2D.Double(2328,1020));
+		tmpPositions.add(new Point2D.Double(3156,1020));
+		tmpPositions.add(new Point2D.Double(3840,1020));
+//		tmpPositions.add(new Point2D.Double(4452,1020));
+//		tmpPositions.add(new Point2D.Double(5094,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+//		tmpPositions.add(new Point2D.Double(,1020));
+		seedPositions.add(tmpPositions);
+		rowYPositions.add(1020.0);
+
+	}
 	
 	public int getExpectedRows(){
 		return expectedRows;
@@ -255,23 +280,23 @@ public class SeedingLayout {
 			String line=null;
 			int lineCnt=0;
 			double rowY=0;
-			if((line = br.readLine()).equals("StartPointsV1.2")){
-				lineCnt++;
-				log.config(String.format("Found start points file version %s", line));
-				String[] parts = br.readLine().split("\\s+");
-				lineCnt++;
-				String[] layoutstr = parts[1].split("x");
-				log.config(String.format("Layout: %s rows, %s columns", layoutstr[0], layoutstr[1]));
-				this.expectedRows = Integer.parseInt(layoutstr[0]);
-				this.expectedColumns = Integer.parseInt(layoutstr[1]);
-			}
-			else{
-				String[] cols=line.split("\\s+");
-				Point2D.Double pt=new Point2D.Double(Double.parseDouble(cols[1]),Double.parseDouble(cols[2]));
-				newPositions.add(pt);
-				rowY+=pt.getY();
-				lineCnt++;
-			}
+//			if((line = br.readLine()).equals("StartPointsV1.2")){
+//				lineCnt++;
+//				log.config(String.format("Found start points file version %s", line));
+//				String[] parts = br.readLine().split("\\s+");
+//				lineCnt++;
+//				String[] layoutstr = parts[1].split("x");
+//				log.config(String.format("Layout: %s rows, %s columns", layoutstr[0], layoutstr[1]));
+//				this.expectedRows = Integer.parseInt(layoutstr[0]);
+//				this.expectedColumns = Integer.parseInt(layoutstr[1]);
+//			}
+//			else{
+//				String[] cols=line.split("\\s+");
+//				Point2D.Double pt=new Point2D.Double(Double.parseDouble(cols[1]),Double.parseDouble(cols[2]));
+//				newPositions.add(pt);
+//				rowY+=pt.getY();
+//				lineCnt++;
+//			}
 
 			while((line=br.readLine())!=null){
 				String[] cols=line.split("\\s+");
