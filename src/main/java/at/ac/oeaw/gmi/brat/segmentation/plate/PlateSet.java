@@ -15,6 +15,8 @@ import ij.process.ImageProcessor;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -151,7 +153,11 @@ public class PlateSet implements Runnable {
                         plants, fileNr, filenameBase);
                 FileUtils.moveFile(new File(baseDirectory, fileName).getAbsolutePath(), new File(moveDirectory, fileName).getAbsolutePath());
             } catch (Exception e) {
-                log.severe(String.format("unhandled exception processing file %s\n%s!", fileName, ExceptionLog.StackTraceToString(e)));
+                StringWriter sw = new StringWriter();
+                PrintWriter pw =new PrintWriter(sw);
+                e.printStackTrace(pw);
+                log.severe(String.format("unhandled exception processing file %s\n%s!",fileName, sw.toString()));
+//                log.severe(String.format("unhandled exception processing file %s\n%s!", fileName, ExceptionLog.StackTraceToString(e)));
 //                e.printStackTrace();
             }
         }
