@@ -26,16 +26,20 @@ public class Brat_V2 implements PlugIn {
 			}
 		}
 
-		BratDispatcher dispatcher = new BratDispatcher();
-		if (isHeadless() || Objects.equals("BRAT_RUNHEADLESS", "true")) {
-			dispatcher.initLogger(null);
-			dispatcher.runHeadless();
-		} else {
-			LogQueue logQueue=new LogQueue(1_000_000);
-			dispatcher.initLogger(logQueue);
-			launch(at.ac.oeaw.gmi.brat.gui.fx.BratFxApp.class);
-		}
-	}
+        BratDispatcher dispatcher = new BratDispatcher();
+        String hdls = System.getenv("BRAT_RUNHEADLESS");
+        if(hdls == null){
+            hdls = "false";
+        }
+        if (isHeadless() || Objects.equals(hdls.toLowerCase(), "true")) {
+            dispatcher.initLogger(null);
+            dispatcher.runHeadless();
+        } else {
+            LogQueue logQueue = new LogQueue(1_000_000);
+            dispatcher.initLogger(logQueue);
+            launch(at.ac.oeaw.gmi.brat.gui.fx.BratFxApp.class);
+        }
+    }
 
 	@Override
 	public void run(String s) {
