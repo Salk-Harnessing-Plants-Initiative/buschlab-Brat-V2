@@ -89,7 +89,30 @@ public class SeedingLayout {
 		rowYPositions.add(2300.0);
 		
 	}
-	
+
+	public void setDelyLayout(){
+		this.scaleFactor=0.5;
+		this.expectedRows=1;
+		this.expectedColumns=9;
+
+		seedPositions=new ArrayList<List<Point2D>>();
+		rowYPositions=new ArrayList<Double>();
+		List<Point2D> tmpPositions=new ArrayList<Point2D>();
+		tmpPositions.add(new Point2D.Double(500,1050));
+		tmpPositions.add(new Point2D.Double(1010,1050));
+		tmpPositions.add(new Point2D.Double(1550,1050));
+		tmpPositions.add(new Point2D.Double(2120,1050));
+		tmpPositions.add(new Point2D.Double(2670,1050));
+		tmpPositions.add(new Point2D.Double(3250,1050));
+		tmpPositions.add(new Point2D.Double(3830,1050));
+		tmpPositions.add(new Point2D.Double(4360,1050));
+		tmpPositions.add(new Point2D.Double(4930,1050));
+		seedPositions.add(tmpPositions);
+		rowYPositions.add(1050.0);
+
+	}
+
+
 	public int getExpectedRows(){
 		return expectedRows;
 	}
