@@ -34,6 +34,7 @@ public class PlateSet implements Runnable{
 	public PlateSet(Set<String> plateFilenames){
 		this.plateFilenames=new ArrayList<String>(plateFilenames);
 		this.seedingLayout=new SeedingLayout(); // default seeding layout
+//		this.seedingLayout.setDelyLayout();
 //		this.seedingLayout.setAlexandroLayout(); //TODO alexandro layout inserted
 	}
 	
@@ -42,6 +43,7 @@ public class PlateSet implements Runnable{
 		for(String filename:plateFilenames){
 			this.plateFilenames.add(filename);
 			this.seedingLayout=new SeedingLayout(); // default seeding layout
+//			this.seedingLayout.setDelyLayout();
 //			this.seedingLayout.setAlexandroLayout(); //TODO alexandro layout inserted
 		}
 	}

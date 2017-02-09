@@ -105,7 +105,7 @@ public class PlantDetector {
 						Point2D seedCenter=seedingLayout.getSeedPosition(row,col);
 						if(seedCenter!=null){
 							double width=seedingLayout.getSearchWidth(row,col);
-							searchArea=new Rectangle((int)(seedCenter.getX()-width/2),(int)(seedCenter.getY()-width/2),(int)width,(int)width);
+							searchArea=new Rectangle((int)(seedCenter.getX()-width/2),(int)(seedCenter.getY()-width),(int)width,(int)(2 * width));
 							log.fine("shoot search area defined by seed layout");
 						}
 					}

@@ -98,17 +98,17 @@ public class SeedingLayout {
 		seedPositions=new ArrayList<List<Point2D>>();
 		rowYPositions=new ArrayList<Double>();
 		List<Point2D> tmpPositions=new ArrayList<Point2D>();
-		tmpPositions.add(new Point2D.Double(500,1050));
-		tmpPositions.add(new Point2D.Double(1010,1050));
-		tmpPositions.add(new Point2D.Double(1550,1050));
-		tmpPositions.add(new Point2D.Double(2120,1050));
-		tmpPositions.add(new Point2D.Double(2670,1050));
-		tmpPositions.add(new Point2D.Double(3250,1050));
-		tmpPositions.add(new Point2D.Double(3830,1050));
-		tmpPositions.add(new Point2D.Double(4360,1050));
-		tmpPositions.add(new Point2D.Double(4930,1050));
+		tmpPositions.add(new Point2D.Double(500,1100));
+		tmpPositions.add(new Point2D.Double(1010,1100));
+		tmpPositions.add(new Point2D.Double(1550,1100));
+		tmpPositions.add(new Point2D.Double(2120,1100));
+		tmpPositions.add(new Point2D.Double(2670,1100));
+		tmpPositions.add(new Point2D.Double(3250,1100));
+		tmpPositions.add(new Point2D.Double(3830,1100));
+		tmpPositions.add(new Point2D.Double(4360,1100));
+		tmpPositions.add(new Point2D.Double(4930,1100));
 		seedPositions.add(tmpPositions);
-		rowYPositions.add(1050.0);
+		rowYPositions.add(1100.0);
 
 	}
 
@@ -188,7 +188,7 @@ public class SeedingLayout {
 		}
 		
 		double width2=Double.MAX_VALUE;
-		if(col<seedPositions.size()-1){
+		if(col<expectedColumns-1){
 			width2=seedPositions.get(row).get(col+1).getX()-seedPositions.get(row).get(col).getX();
 //			if(width<searchWidth){
 //				searchWidth=(int)width;
