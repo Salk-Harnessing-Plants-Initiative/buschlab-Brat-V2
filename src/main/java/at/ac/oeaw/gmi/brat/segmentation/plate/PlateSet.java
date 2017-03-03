@@ -74,6 +74,7 @@ public class PlateSet implements Runnable{
 
 		if(prefs_simple.getBoolean("haveDayZeroImage",true)) {
 			String filePath=new File(baseDirectory,plateFilenames.get(0)).getAbsolutePath();
+			log.info(String.format("processing day zero image: %s", plateFilenames.get(0)));
 			currentWorkIp =opener.openImage(filePath).getProcessor();
 			
 			if(prefs_simple.getBoolean("flipHorizontal",true)){
@@ -81,8 +82,20 @@ public class PlateSet implements Runnable{
 			}
 			
 			PlateDetector plateDetector=new PlateDetector(currentWorkIp,1.0,plateShape);
-			plateDetector.detectInsideArea();
-			currentWorkIp =plateDetector.getCorrectedIp();
+			int origWidth = currentWorkIp.getWidth();
+			int origHeight = currentWorkIp.getHeight();
+			boolean done = false;
+			int maxColorRise = 3;
+			while(!done && maxColorRise<6) {
+				plateDetector.detectInsideArea(maxColorRise);
+				currentWorkIp = plateDetector.getCorrectedIp();
+				if(currentWorkIp.getWidth()/origWidth < 0.5 || currentWorkIp.getHeight()/origHeight < 0.5){
+					++maxColorRise;
+				}
+				else{
+					done = true;
+				}
+			}
 
 			SeedDetector sd=new SeedDetector(currentWorkIp);
 			sd.identifySeeds(prefs_expert.getDouble("seedMinimumSize",0.1),prefs_expert.getDouble("seedMaximumSize",0.7));
@@ -107,6 +120,7 @@ public class PlateSet implements Runnable{
 		for(int fileNr=0;fileNr<plateFilenames.size();++fileNr){
 			String fileName=plateFilenames.get(fileNr);
 			String filenameBase=FileUtils.removeExtension(fileName);
+			log.info(String.format("processing image: %s", fileName));
 
 			try{
 //				IJ.log("working on file: '"+fileName+"'");
@@ -117,9 +131,22 @@ public class PlateSet implements Runnable{
 				}
 
 //				IJ.log(currentWorkIp.toString());
-				PlateDetector plateDetector=new PlateDetector(currentWorkIp,1.0,plateShape);
-				plateDetector.detectInsideArea();
-				currentWorkIp =plateDetector.getCorrectedIp();
+				int origWidth = currentWorkIp.getWidth();
+				int origHeight = currentWorkIp.getHeight();
+				boolean done = false;
+				int maxColorRise = 3;
+				PlateDetector plateDetector = null;
+				while(!done && maxColorRise<5) {
+					plateDetector=new PlateDetector(currentWorkIp,1.0,plateShape);
+					plateDetector.detectInsideArea(maxColorRise);
+					currentWorkIp =plateDetector.getCorrectedIp();
+					if((double)currentWorkIp.getWidth()/origWidth < 0.5 || (double)currentWorkIp.getHeight()/origHeight < 0.5){
+						++maxColorRise;
+					}
+					else{
+						done = true;
+					}
+				}
 //				IJ.log(currentWorkIp.toString());
 
 				//TODO check if corrected ip is valid

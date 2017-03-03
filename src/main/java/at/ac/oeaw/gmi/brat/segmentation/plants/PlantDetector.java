@@ -154,7 +154,7 @@ public class PlantDetector {
 				EDM edm=new EDM();
 				edm.toEDM(shootBinaryIp);
 				edm.toEDM(shootBinaryIp2);
-				
+
 				ImageProcessor maskIp=new ByteProcessor(searchArea.width,searchArea.height);
 				maskIp.setColor(255);
 				double minimumEDM=Math.round(prefs_expert.getDouble("shootMinThickness",0.1)/mmPerPixel/2);
@@ -192,8 +192,11 @@ public class PlantDetector {
 						maskIp.fill(roi);
 					}
 				}
+//				new ImagePlus("mask", maskIp).show();
 				shootRoi=new ShapeRoi(ts1.convert(maskIp));
-
+				if(shootRoi.getBounds().getWidth() == 0 || shootRoi.getBounds().getHeight() ==0){
+					continue;
+				}
 				List<CPoint> pts=new ArrayList<CPoint>();
 				for(Roi roi:((ShapeRoi)shootRoi).getRois()){
 					Polygon poly=roi.getPolygon();

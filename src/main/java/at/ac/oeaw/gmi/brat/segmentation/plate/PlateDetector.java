@@ -4,6 +4,7 @@ import at.ac.oeaw.gmi.brat.segmentation.algorithm.ConvexHull;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.EdgeFilter;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT;
 import at.ac.oeaw.gmi.brat.segmentation.algorithm.LinearHT.HoughLine;
+import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.gui.Wand;
@@ -72,8 +73,8 @@ public class PlateDetector {
 		searchBestRoiFit(tmpIp);
 	}
 	
-	public void detectInsideArea(){
-		int maxColorRise=3;
+	public void detectInsideArea(int maxColorRise){
+//		int maxColorRise=3;
 		ImageProcessor binaryIp=new ByteProcessor(width,height);
 		ImageProcessor workIp=origIp; //ef.getGradientMagnitudeProcessor().convertToByte(true);
 
@@ -113,7 +114,7 @@ public class PlateDetector {
 						break;
 				}
 				
-				if(nCoords[0]<0 || nCoords[0]>width-1 || nCoords[1]<0 || nCoords[1]>height-1)
+				if(nCoords[0]<0 || nCoords[0]>=width || nCoords[1]<0 || nCoords[1]>=height)
 					continue;
 				
 				int curVal=workIp.get(curCoords[0],curCoords[1]);
@@ -212,7 +213,7 @@ public class PlateDetector {
 			dist2+=(refRgb[i]-pixRgb[i])*(refRgb[i]-pixRgb[i]);
 		}
 		
-		return (dist2<3*maxColorRise);
+		return (dist2<=3*maxColorRise);
 		}
 	
 	private double getNormalAngle(double angle){
