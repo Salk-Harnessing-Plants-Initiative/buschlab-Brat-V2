@@ -89,9 +89,9 @@ public class PlantDetector {
 						searchArea.width+=prefs_expert.getInt("shootWidthStep",200);
 						searchArea.height+=prefs_expert.getInt("shootHeightStep",200);
 						log.fine("shoot search area defined by previous shoot detection");
-						if(searchArea.width < 0 || searchArea.height < 0){
-							log.warning("search area detection failed.");
-						}
+//						if(searchArea.width < 0 || searchArea.height < 0){
+//							log.warning("search area detection failed.");
+//						}
 					}
 					else{
 						Point2D seedCenter=plant.getSeedCenter();
@@ -99,9 +99,9 @@ public class PlantDetector {
 							double width=seedingLayout.getSearchWidth(row,col);
 							searchArea=new Rectangle((int)(seedCenter.getX()-width/2),(int)(seedCenter.getY()-width/2),(int)width,(int)width);
 							log.fine("shoot search area defined by detected seed center");
-							if(searchArea.width < 0 || searchArea.height < 0){
-								log.warning("search area detection failed.");
-							}
+//							if(searchArea.width < 0 || searchArea.height < 0){
+//								log.warning("search area detection failed.");
+//							}
 						}
 					}
 				}
@@ -113,9 +113,9 @@ public class PlantDetector {
 							double width=seedingLayout.getSearchWidth(row,col);
 							searchArea=new Rectangle((int)(seedCenter.getX()-width/2),(int)(seedCenter.getY()-width),(int)width,(int)(2 * width));
 							log.fine("shoot search area defined by seed layout");
-							if(searchArea.width < 0 || searchArea.height < 0){
-								log.warning("search area detection failed.");
-							}
+//							if(searchArea.width < 0 || searchArea.height < 0){
+//								log.warning("search area detection failed.");
+//							}
 						}
 					}
 					else{
