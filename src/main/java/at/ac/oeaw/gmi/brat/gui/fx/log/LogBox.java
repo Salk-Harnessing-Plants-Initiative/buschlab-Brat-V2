@@ -38,10 +38,11 @@ public class LogBox extends VBox {
         ToggleButton showTimestamp = new ToggleButton("Extended Messages");
             logView.showTimeStampProperty().bind(showTimestamp.selectedProperty());
 
-        ToggleButton tail = new ToggleButton("Tail");
-            tail.setPrefWidth(100);
-            logView.tailProperty().bind(tail.selectedProperty());
-        tail.setSelected(true);
+//        ToggleButton tail = new ToggleButton("Tail");
+//            tail.setPrefWidth(100);
+//            //TODO: remove tail button from GUI (auto scrolling is controlled by scrollbar now)
+//            //logView.tailProperty().bind(tail.selectedProperty());
+//        tail.setSelected(true);
 
         ToggleButton pause = new ToggleButton("Pause");
         pause.setPrefWidth(100);
@@ -62,7 +63,7 @@ public class LogBox extends VBox {
                 10,
                 filterLevel,
                 showTimestamp,
-                tail,
+//                tail,
                 pause,
                 export
 //                rateLayout

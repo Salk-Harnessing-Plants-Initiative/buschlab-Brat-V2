@@ -125,6 +125,9 @@ public class PlateSet implements Runnable{
 			try{
 //				IJ.log("working on file: '"+fileName+"'");
 				currentWorkIp =opener.openImage(baseDirectory,fileName).getProcessor();
+				if(prefs_simple.getBoolean("haveStartPoints", false)){
+					seedingLayout.readStartPoints(baseDirectory, fileName);
+				}
 
 				if(prefs_simple.getBoolean("flipHorizontal",true)){
 					currentWorkIp.flipHorizontal();

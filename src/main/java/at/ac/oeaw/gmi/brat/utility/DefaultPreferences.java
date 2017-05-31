@@ -20,6 +20,7 @@ public class DefaultPreferences {
         prefs_simple.put("flipHorizontal","true");
         prefs_simple.putBoolean("useSets",true);
         prefs_simple.putBoolean("haveDayZeroImage",true);
+        prefs_simple.putBoolean("haveStartPoints",true);
         prefs_simple.putDouble("numThreads",1.0);
 
         prefs_simple.flush();

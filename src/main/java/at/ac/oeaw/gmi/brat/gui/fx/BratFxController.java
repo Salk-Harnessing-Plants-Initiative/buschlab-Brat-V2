@@ -42,6 +42,7 @@ public class BratFxController {
     @FXML private CheckBox chkboxFlipHorizontal;
     @FXML private CheckBox chkboxTimeSeries;
     @FXML private CheckBox chkboxDayZero;
+    @FXML private CheckBox chkboxStartPoints;
     @FXML private Slider sliderNumThreads;
     @FXML private Label lblNumThreads;
 
@@ -93,7 +94,10 @@ public class BratFxController {
         chkboxFlipHorizontal.setSelected(prefs_simple.getBoolean("flipHorizontal",true));
         chkboxTimeSeries.setSelected(prefs_simple.getBoolean("useSets",true));
         chkboxDayZero.setSelected(prefs_simple.getBoolean("haveDayZeroImage",true));
+        chkboxStartPoints.setSelected(prefs_simple.getBoolean("haveStartPoints", false));
         sliderNumThreads.setValue(prefs_simple.getDouble("numThreads",1.0));
+        btnBaseDirBrowse.setOnAction(actionEvent -> directorySelect());
+        btnStart.setOnAction(actionEvent -> startRun());
 
         txtfldExpIdentifier.setText(prefs_expert.get("experimentIdentifier","^(.*?_)"));
         txtfldSetIdentifier.setText(prefs_expert.get("setIdentifier","set\\d+"));
@@ -192,7 +196,7 @@ public class BratFxController {
     }
 
     @FXML
-    protected void directorySelect(ActionEvent e){
+    protected void directorySelect(){
         String currentSelection = txtfldBaseDir.getText();
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Select Base Directory");
@@ -209,7 +213,7 @@ public class BratFxController {
     }
 
     @FXML
-    protected void startRun(ActionEvent e){
+    protected void startRun(){
         updatePreferences();
         accordionMain.setExpandedPane(paneLog);
         BratDispatcher dispatcher = new BratDispatcher();
@@ -223,6 +227,7 @@ public class BratFxController {
         chkboxFlipHorizontal.setSelected(true);
         chkboxTimeSeries.setSelected(true);
         chkboxDayZero.setSelected(true);
+        chkboxStartPoints.setSelected(false);
         sliderNumThreads.setValue(1.0);
 
         txtfldExpIdentifier.setText("^(.*?_)");
@@ -266,6 +271,7 @@ public class BratFxController {
         prefs_simple.putBoolean("flipHorizontal",chkboxFlipHorizontal.isSelected());
         prefs_simple.putBoolean("useSets",chkboxTimeSeries.isSelected());
         prefs_simple.putBoolean("haveDayZeroImage",chkboxDayZero.isSelected());
+        prefs_simple.putBoolean("haveStartPoints",chkboxStartPoints.isSelected());
         prefs_simple.putDouble("numThreads",sliderNumThreads.getValue());
 
 

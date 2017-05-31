@@ -1,5 +1,7 @@
 package at.ac.oeaw.gmi.brat.gui.fx.log;
 
+import com.sun.javafx.scene.control.skin.ListViewSkin;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,6 +10,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.css.PseudoClass;
+import javafx.scene.Node;
+import javafx.scene.control.IndexedCell;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Duration;
@@ -162,11 +166,56 @@ class LogView extends ListView<LogRecord> {
         });
     }
 
+//    public int getLast() {
+//        try {
+//            ListViewSkin<?> ts = (ListViewSkin<?>) getSkin();
+//            VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
+//            int last = vf.getLastVisibleCell().getIndex();
+//            System.out.println("last element = "+last);
+//            return last;
+////            logger.debug("##### Scrolling first {} last {}", first, last);
+//        } catch (Exception ex) {
+////            logger.debug("##### Scrolling: Exception " + ex);
+//
+//        }
+//        return -1;
+//    }
+
+
     public void setLogQueue(LogQueue logQueue){
         this.logQueue = logQueue;
         logTransfer.getKeyFrames().add(new KeyFrame(
-                Duration.seconds(1),
+                Duration.millis(100),
                 event -> {
+                    /*
+                     * switch of automatic scrolling when scrollbar is moved from last position
+                     * TODO: needs calculation of real shown elements if filter level is less than "ALL"
+                     */
+                    for(Node n : getChildrenUnmodifiable()){
+                        if(n instanceof VirtualFlow){
+                            VirtualFlow flow = (VirtualFlow)n;
+//                            int first = 0;
+                            int last = 0;
+//                            IndexedCell cfirst = flow.getFirstVisibleCell();
+                            IndexedCell clast = flow.getLastVisibleCell();
+
+                            if(clast != null){
+//                                first = cfirst.getIndex();
+                                last = clast.getIndex();
+                            }
+//                            System.out.println(flow.getCellCount()+" - "+first+" - "+last+" - "+getItems().size());
+
+                            int maxLen = getItems().size();
+                            if(last == maxLen-1){
+//                                System.out.println("tail on");
+                                tail.setValue(true);
+                            }
+                            else{
+//                                System.out.println("tail off");
+                                tail.setValue(false);
+                            }
+                        }
+                    }
                     logQueue.drainTo(logItems);
 
                     if (logItems.size() > MAX_ENTRIES) {

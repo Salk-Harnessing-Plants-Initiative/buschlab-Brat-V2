@@ -3,13 +3,17 @@ package at.ac.oeaw.gmi.brat.segmentation.seeds;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import at.ac.oeaw.gmi.brat.math.KMeans1d;
+import at.ac.oeaw.gmi.brat.utility.FileUtils;
 
 public class SeedingLayout {
+	private final static Logger log=Logger.getLogger(SeedingLayout.class.getName());
 	private final Preferences prefs_simple = Preferences.userRoot().node("at/ac/oeaw/gmi/bratv2");
 	private final Preferences prefs_expert = prefs_simple.node("expert");
 	private final double mmPerPixel = 25.4/prefs_expert.getDouble("resolution",1200);
@@ -235,6 +239,47 @@ public class SeedingLayout {
 			seedPositions.get(lineIdx).add(pt);
 		}
 	}
-	
+
+	public void readStartPoints(String baseDirectory, String imgFileName) {
+		String stptFilename="StartPoints_"+ FileUtils.removeExtension(imgFileName)+".txt";
+		File stPtFile=new File(baseDirectory,stptFilename);
+
+		BufferedReader br=null;
+		seedPositions=new ArrayList<List<Point2D>>();
+		rowYPositions=new ArrayList<Double>();
+		try{
+			br=new BufferedReader(new FileReader(stPtFile));
+			for(int j=0;j<expectedRows;++j){
+				List<Point2D> rowPositions=new ArrayList<Point2D>();
+				double rowY=0;
+				for(int i=0;i<expectedColumns;++i) {
+					String line = br.readLine();
+					String[] cols = line.split("\\s+");
+					Point2D.Double pt = new Point2D.Double(Double.parseDouble(cols[1]), Double.parseDouble(cols[2]));
+					rowPositions.add(pt);
+					rowY += pt.getY();
+				}
+				seedPositions.add(rowPositions);
+				rowYPositions.add(rowY/expectedColumns);
+			}
+		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+			log.warning(String.format("Could not find start point file: %s",stPtFile.getAbsolutePath()));
+		} catch (IOException e) {
+//			e.printStackTrace();
+			log.warning(String.format("ERROR: Could not read start point file: %s",stPtFile.getAbsolutePath()));
+		}
+		finally{
+			if(br!=null){
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
 	
 }
