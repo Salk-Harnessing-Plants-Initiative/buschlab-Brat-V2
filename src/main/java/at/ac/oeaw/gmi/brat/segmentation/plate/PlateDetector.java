@@ -349,6 +349,7 @@ public class PlateDetector {
 		Rectangle outlineBounds=convexOutline.getBounds();
 		int xOffset=outlineBounds.width-shapeBounds.width;
 		int yOffset=outlineBounds.height-shapeBounds.height;
+		referencePt=new Point2D.Double(outlineBounds.x+xOffset,outlineBounds.y+yOffset); //TODO: should be done when calculating rotation
 		for(int y=0;y<dstIp.getHeight();++y){
 			for(int x=0;x<dstIp.getWidth();++x){
 				if(shapeMask.get(x,y)>0){
